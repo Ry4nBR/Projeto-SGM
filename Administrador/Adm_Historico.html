@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SGM ADM - Histórico e Logs de Máquinas</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght=400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="Adm_Historico.css">
+</head>
+<body>
+
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <h2>SGM</h2>
+                <span>Módulo Administrador</span>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="Adm_Painel.html" class="nav-item">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H7c0-2.76 2.24-5 5-5s5 2.24 5 5c0 1.04-.42 1.99-1.07 2.75z"/></svg>
+                    Acompanhamento OS
+                </a>
+                <a href="Adm_Historico.html" class="nav-item active">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                    Histórico de Máquinas
+                </a>
+                <a href="Adm_Kits.html" class="nav-item">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                    Padronização de Kits
+                </a>
+                <a href="Adm_Usuarios.html" class="nav-item">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                    Controle de Usuários
+                </a>
+                <a href="../login.html" class="nav-item btn-logout">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                    Sair
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="user-avatar">AD</div>
+                <div class="user-info">
+                    <p class="user-name">Eng. Gestor</p>
+                    <span class="user-role">Administrador Master</span>
+                </div>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="main-header">
+                <div class="header-title">
+                    <h1>Histórico Cronológico e Logs de Falhas</h1>
+                    <p>Rastreabilidade total de quebras, substituições de componentes e diagnósticos técnicos por equipamento.</p>
+                </div>
+            </header>
+
+            <section class="card-base search-section">
+                <div class="search-box-wrapper">
+                    <label for="search-asset">Selecione ou busque a máquina para análise:</label>
+                    <div class="search-input-container">
+                        <select id="search-asset">
+                            <option value="" disabled selected>Escolha uma máquina da linha de calçados...</option>
+                            <option value="MQ-01">Injetora de Solados TR - Máquina MQ-01</option>
+                            <option value="MQ-02">Prensa de Vulcanização Hidráulica - Máquina MQ-02</option>
+                            <option value="MQ-03">Estufa de Secagem de Colas Flash - Máquina MQ-03</option>
+                            <option value="MQ-04">Chanfradeira de Couros Eletrônica - Máquina MQ-04</option>
+                        </select>
+                        <button id="btn-clear-search" class="btn-secondary-action">Limpar Filtro</button>
+                    </div>
+                </div>
+            </section>
+
+            <div id="empty-state-container" class="empty-state-card">
+                <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <p>Nenhum ativo selecionado. Utilize o campo de busca acima para carregar a cronologia de intervenções da máquina desejada.</p>
+            </div>
+
+            <div id="history-results-container" class="history-hidden">
+                
+                <div class="asset-summary-banner">
+                    <div class="summary-item">
+                        <span class="summary-label">Equipamento em Análise</span>
+                        <h2 id="asset-display-name">Prensa de Vulcanização Hidráulica</h2>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">MTBF Estimado</span>
+                        <p class="summary-data text-highlight">184h <span class="summary-subtext">de operação contínua</span></p>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Total de Intervenções (Ano)</span>
+                        <p class="summary-data" id="asset-display-total">02 registros</p>
+                    </div>
+                </div>
+
+                <div class="card-section-title">
+                    <h3>Linha do Tempo de Intervenções</h3>
+                </div>
+                <div class="table-card">
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Data / Hora</th>
+                                    <th>Tipo de Falha</th>
+                                    <th>Técnico Responsável</th>
+                                    <th>Materiais / Kits Aplicados</th>
+                                    <th>Relato Técnico do Encerramento</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-logs-body">
+                                </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script src="Adm_Historico.js"></script>
+</body>
+</html>

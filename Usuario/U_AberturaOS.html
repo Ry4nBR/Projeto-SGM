@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SGM - Abertura de OS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="U_AberturaOS.css">
+</head>
+<body>
+
+    <div class="app-container">
+        <aside class="sidebar">
+    <div class="sidebar-logo">
+        <h2>SGM</h2>
+        <span>Wanderillo de Castro</span>
+    </div>
+    <nav class="sidebar-nav">
+        <a href="U_AberturaOS.html" class="nav-item active">
+            Abertura de OS
+        </a>
+        <a href="U_Chamados.html" class="nav-item">
+            Meus Chamados
+        </a>
+
+        <a href="../login.html" class="nav-item btn-logout">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                <polyline points="16 17 21 12 16 7"></polyline>
+                <line x1="21" y1="12" x2="9" y2="12"></line>
+            </svg>
+            Sair
+        </a>
+    </nav>
+    <div class="sidebar-footer">
+        </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="main-header">
+                <div class="header-title">
+                    <h1>Abertura de Ordem de Serviço</h1>
+                    <p>Solicite manutenção para máquinas e equipamentos do chão de fábrica</p>
+                </div>
+            </header>
+
+            <section class="content-body">
+                <form id="form-os" class="os-form-grid">
+                    
+                    <div class="form-card">
+                        <h3 class="card-title">Informações do Equipamento</h3>
+                        
+                        <div class="input-group">
+                            <label for="select-maquina">Máquina / Equipamento</label>
+                            <select id="select-maquina" required>
+                                <option value="" disabled selected>Selecione a máquina...</option>
+                                <option value="MQ-01">MQ-01 - Máquina de Costura Reta Industrial</option>
+                                <option value="MQ-02">MQ-02 - Prensa Hidráulica de Solado</option>
+                                <option value="MQ-03">MQ-03 - Chanfradora de Couro</option>
+                                <option value="MQ-04">MQ-04 - Rebitadeira Semiautomática</option>
+                                <option value="MQ-05">MQ-05 - Esteira de Secagem e Colagem</option>
+                            </select>
+                        </div>
+
+                        <div class="input-row">
+                            <div class="input-group">
+                                <label for="select-setor">Setor da Fábrica</label>
+                                <select id="select-setor" required>
+                                    <option value="" disabled selected>Selecione...</option>
+                                    <option value="Corte">Corte</option>
+                                    <option value="Costura">Costura</option>
+                                    <option value="Montagem">Montagem</option>
+                                    <option value="Acabamento">Acabamento</option>
+                                </select>
+                            </div>
+
+                            <div class="input-group">
+                                <label for="select-especialidade">Especialidade Requerida</label>
+                                <select id="select-especialidade" required>
+                                    <option value="" disabled selected>Selecione...</option>
+                                    <option value="Mecânica">Mecânica</option>
+                                    <option value="Elétrica">Elétrica</option>
+                                    <option value="Pneumática">Pneumática</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="txt-descricao">Descrição Breve do Problema</label>
+                            <textarea id="txt-descricao" rows="4" placeholder="Descreva de forma simples o que está acontecendo (Ex: Agulha travando, motor superaquecido, vazamento de óleo...)" required></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-card side-panel">
+                        <h3 class="card-title">Condição Atual da Máquina</h3>
+                        <p class="card-subtitle">Como este problema afeta a linha de produção agora?</p>
+
+                        <div class="status-selector-grid">
+                            <label class="status-card card-restriction">
+                                <input type="radio" name="status_maquina" value="restricao" required>
+                                <div class="status-card-content">
+                                    <div class="status-icon warning"></div>
+                                    <h4>Funcionando com Restrição</h4>
+                                    <p>A máquina apresenta falhas, mas ainda consegue operar com velocidade reduzida.</p>
+                                </div>
+                            </label>
+
+                            <label class="status-card card-danger">
+                                <input type="radio" name="status_maquina" value="parada" required>
+                                <div class="status-card-content">
+                                    <div class="status-icon danger"></div>
+                                    <h4>Parada Total</h4>
+                                    <p>A máquina está completamente inoperante. Linha de produção interrompida.</p>
+                                </div>
+                            </label>
+                        </div>
+
+                        <div id="panel-criticidade" class="criticidade-box status-empty">
+                            <span class="criticidade-label">Criticidade Calculada do Chamado:</span>
+                            <div id="criticidade-value" class="criticidade-value">Aguardando Seleção</div>
+                        </div>
+
+                        <button type="submit" class="btn-primary">
+                            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M19 13H13V19H11V13H5V11H11V5H13V11H19V13Z"/></svg>
+                            Abrir Ordem de Serviço
+                        </button>
+                    </div>
+
+                </form>
+            </section>
+        </main>
+    </div>
+
+    <script src="U_AberturaOS.js"></script>
+</body>
+</html>

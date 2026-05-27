@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SGM ADM - Acompanhamento Geral</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght=400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="Adm_Painel.css">
+</head>
+<body>
+
+    <div class="app-container">
+        <aside class="sidebar">
+    <div class="sidebar-logo">
+        <h2>SGM</h2>
+        <span>Módulo Administrador</span>
+    </div>
+    <nav class="sidebar-nav">
+        <a href="Adm_Painel.html" class="nav-item active">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H7c0-2.76 2.24-5 5-5s5 2.24 5 5c0 1.04-.42 1.99-1.07 2.75z"/></svg>
+            Acompanhamento OS
+        </a>
+        <a href="Adm_Historico.html" class="nav-item">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            Histórico de Máquinas
+        </a>
+        <a href="Adm_Kits.html" class="nav-item">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+            Padronização de Kits
+        </a>
+        <a href="Adm_Usuarios.html" class="nav-item">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+            Controle de Usuários
+        </a>
+        <a href="../login.html" class="nav-item btn-logout">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+            Sair
+        </a>
+    </nav>
+    <div class="sidebar-footer">
+        <div class="user-avatar">AD</div>
+        <div class="user-info">
+            <p class="user-name">Eng. Gestor</p>
+            <span class="user-role">Administrador Master</span>
+        </div>
+    </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="main-header">
+                <div class="header-title">
+                    <h1>Visão Macro Real-Time</h1>
+                    <p>Status operacional das ordens de manutenção corretiva e preventiva de toda a planta fabril.</p>
+                </div>
+            </header>
+
+            <section class="metrics-cards-grid">
+                <div class="card-metric">
+                    <span class="metric-label">Total de OS Abertas</span>
+                    <p class="metric-value">24</p>
+                    <span class="metric-subtext">Chamados em andamento</span>
+                </div>
+                <div class="card-metric">
+                    <span class="metric-label">MTTR Médio (Hoje)</span>
+                    <p class="metric-value text-normal">42<span class="metric-unit">min</span></p>
+                    <span class="metric-subtext">Tempo médio de reparo</span>
+                </div>
+                <div class="card-metric border-highlight-danger">
+                    <span class="metric-label">Máquinas Paradas Agora</span>
+                    <p class="metric-value text-danger">03</p>
+                    <span class="metric-subtext">Bloqueio total de linha</span>
+                </div>
+            </section>
+
+            <section class="card-base filter-section">
+                <div class="filter-grid">
+                    <div class="form-group">
+                        <label for="filter-tecnico">Técnico Atribuído</label>
+                        <select id="filter-tecnico">
+                            <option value="todos">Todos os Técnicos</option>
+                            <option value="Carlos Silva">Carlos Silva</option>
+                            <option value="Fernando Souza">Fernando Souza</option>
+                            <option value="Não Atribuído">Sem Técnico</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="filter-setor">Setor / Linha</label>
+                        <select id="filter-setor">
+                            <option value="todos">Todos os Setores</option>
+                            <option value="Montagem">Montagem</option>
+                            <option value="Estamparia">Estamparia</option>
+                            <option value="Injeção">Injeção</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="filter-criticidade">Criticidade</label>
+                        <select id="filter-criticidade">
+                            <option value="todos">Todas as Criticidades</option>
+                            <option value="Alta">Alta (Urgente)</option>
+                            <option value="Média">Média</option>
+                            <option value="Baixa">Baixa</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="filter-status">Status da Ordem</label>
+                        <select id="filter-status">
+                            <option value="todos">Todos os Status</option>
+                            <option value="Em Manutenção">Em Manutenção</option>
+                            <option value="Aguardando Peças">Aguardando Peças</option>
+                            <option value="Aguardando Devolução do Kit">Aguardando Devolução do Kit</option>
+                        </select>
+                    </div>
+                </div>
+            </section>
+
+            <section class="table-card">
+                <div class="table-container">
+                    <table id="table-master-os">
+                        <thead>
+                            <tr>
+                                <th>Código</th>
+                                <th>Equipamento</th>
+                                <th>Setor</th>
+                                <th>Criticidade</th>
+                                <th>Status</th>
+                                <th>Técnico Atual</th>
+                                <th>Intervenção (Reatribuir)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr data-tecnico="Carlos Silva" data-setor="Montagem" data-criticidade="Alta" data-status="Em Manutenção">
+                                <td class="col-id">#OS-102</td>
+                                <td><strong>Prensa Hidráulica MQ-02</strong></td>
+                                <td>Montagem</td>
+                                <td><span class="badge-crit criticidade-alta">Alta</span></td>
+                                <td><span class="badge-status status-manutencao">Em Manutenção</span></td>
+                                <td class="td-tech-name">Carlos Silva</td>
+                                <td>
+                                    <select class="select-table-reassign" onchange="reatribuirTecnico(this, '#OS-102')">
+                                        <option value="Carlos Silva" selected>Carlos Silva</option>
+                                        <option value="Fernando Souza">Fernando Souza</option>
+                                        <option value="Não Atribuído">Remover Técnico</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr data-tecnico="Fernando Souza" data-setor="Injeção" data-criticidade="Média" data-status="Aguardando Peças">
+                                <td class="col-id">#OS-104</td>
+                                <td>Injetora de Plástico MQ-09</td>
+                                <td>Injeção</td>
+                                <td><span class="badge-crit criticidade-media">Média</span></td>
+                                <td><span class="badge-status status-pecas">Aguardando Peças</span></td>
+                                <td class="td-tech-name">Fernando Souza</td>
+                                <td>
+                                    <select class="select-table-reassign" onchange="reatribuirTecnico(this, '#OS-104')">
+                                        <option value="Carlos Silva">Carlos Silva</option>
+                                        <option value="Fernando Souza" selected>Fernando Souza</option>
+                                        <option value="Não Atribuído">Remover Técnico</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr data-tecnico="Não Atribuído" data-setor="Estamparia" data-criticidade="Alta" data-status="Em Manutenção">
+                                <td class="col-id">#OS-108</td>
+                                <td>Torno Mecânico MQ-11</td>
+                                <td>Estamparia</td>
+                                <td><span class="badge-crit criticidade-alta">Alta</span></td>
+                                <td><span class="badge-status status-manutencao">Em Manutenção</span></td>
+                                <td class="td-tech-name label-unassigned">Não Atribuído</td>
+                                <td>
+                                    <select class="select-table-reassign highlighted-select" onchange="reatribuirTecnico(this, '#OS-108')">
+                                        <option value="Não Atribuído" selected>Escolher Técnico...</option>
+                                        <option value="Carlos Silva">Carlos Silva</option>
+                                        <option value="Fernando Souza">Fernando Souza</option>
+                                    </select>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="Adm_Painel.js"></script>
+</body>
+</html>

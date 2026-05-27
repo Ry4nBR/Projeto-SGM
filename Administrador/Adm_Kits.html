@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SGM ADM - Engenharia de Kits e Ferramental</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght=400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="Adm_Kits.css">
+</head>
+<body>
+
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <h2>SGM</h2>
+                <span>Módulo Administrador</span>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="Adm_Painel.html" class="nav-item">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H7c0-2.76 2.24-5 5-5s5 2.24 5 5c0 1.04-.42 1.99-1.07 2.75z"/></svg>
+                    Acompanhamento OS
+                </a>
+                <a href="Adm_Historico.html" class="nav-item">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                    Histórico de Máquinas
+                </a>
+                <a href="Adm_Kits.html" class="nav-item active">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                    Padronização de Kits
+                </a>
+                <a href="Adm_Usuarios.html" class="nav-item">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                    Controle de Usuários
+                </a>
+                <a href="../login.html" class="nav-item btn-logout">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                    Sair
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="user-avatar">AD</div>
+                <div class="user-info">
+                    <p class="user-name">Eng. Gestor</p>
+                    <span class="user-role">Administrador Master</span>
+                </div>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="main-header">
+                <div class="header-title">
+                    <h1>Engenharia de Estoque e Kits Padrão</h1>
+                    <p>Cadastre componentes avulsos e monte a composição de ferramentas padronizadas por modelo de máquina.</p>
+                </div>
+            </header>
+
+            <section class="forms-split-grid">
+                <div class="card-base">
+                    <div class="card-header-inside">
+                        <h3>1. Inserir Item no Almoxarifado</h3>
+                    </div>
+                    <form id="form-add-item-individual">
+                        <div class="form-group">
+                            <label for="txt-item-name">Descrição da Ferramenta / Componente</label>
+                            <input type="text" id="txt-item-name" placeholder="Ex: Chave Allen 5mm Isolada" required>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="num-item-stock">Qtd em Estoque</label>
+                                <input type="number" id="num-item-stock" min="0" placeholder="10" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="sel-item-type">Tipo de Ativo</label>
+                                <select id="sel-item-type" required>
+                                    <option value="Ferramenta">Ferramenta</option>
+                                    <option value="Peça de Reposição">Peça de Reposição</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-primary-action">Cadastrar e Disponibilizar</button>
+                    </form>
+                </div>
+
+                <div class="card-base">
+                    <div class="card-header-inside">
+                        <h3>2. Estruturar Novo Kit Padronizado</h3>
+                    </div>
+                    <form id="form-build-kit">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="txt-kit-name">Nome Identificador do Kit</label>
+                                <input type="text" id="txt-kit-name" placeholder="Ex: Kit Prensa Hidráulica Avançado" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="sel-kit-machine">Máquina Indicada</label>
+                                <select id="sel-kit-machine" required>
+                                    <option value="" disabled selected>Vincular a uma máquina...</option>
+                                    <option value="Prensa MQ-02">Prensa Hidráulica MQ-02</option>
+                                    <option value="Injetora MQ-09">Injetora de Plástico MQ-09</option>
+                                    <option value="Chanfradeira MQ-04">Chanfradeira de Couros MQ-04</option>
+                                    <option value="Todas">Uso Geral na Planta</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group margin-top-sm">
+                            <label>Ferramentas Inclusas (Selecione os itens componentes do Kit):</label>
+                            <div class="checkbox-list-container">
+                                <label class="checkbox-item">
+                                    <input type="checkbox" name="kit-components" value="Multímetro Fluke 179"> Multímetro Digital Fluke 179
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" name="kit-components" value="Jogo Chaves Allen"> Jogo de Chaves Allen (1.5mm a 10mm)
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" name="kit-components" value="Chave Inglesa 10"> Chave Inglesa Ajustável 10"
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" name="kit-components" value="Alicate Amperímetro"> Alicate Amperímetro Digital
+                                </label>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-primary-action btn-color-success">Salvar e Ativar Kit Padrão</button>
+                    </form>
+                </div>
+            </section>
+
+            <div class="card-section-title margin-top-lg">
+                <h3>Kits Cadastrados e Status Operacional de Rastreabilidade</h3>
+            </div>
+            <section class="table-card">
+                <div class="table-container">
+                    <table id="table-kits-status">
+                        <thead>
+                            <tr>
+                                <th>Nome do Kit</th>
+                                <th>Máquina Vinculada Indicada</th>
+                                <th>Ferramentas Integrantes da Composição</th>
+                                <th>Status de Disponibilidade</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Kit Padrão Mecânica Avançada #01</strong></td>
+                                <td>Prensa Hidráulica MQ-02</td>
+                                <td>Jogo Chaves Allen, Chave Inglesa 10", Martelo de Retrocesso</td>
+                                <td><span class="badge-status status-disponivel">Disponível</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Kit Padrão Mecânica Avançada #02</strong></td>
+                                <td>Prensa Hidráulica MQ-02</td>
+                                <td>Jogo Chaves Allen, Chave Inglesa 10", Alicate de Pressão</td>
+                                <td><span class="badge-status status-em-uso">Em uso na OS #102</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Kit Calibração Elétrica Flash</strong></td>
+                                <td>Injetora de Plástico MQ-09</td>
+                                <td>Multímetro Fluke 179, Alicate Amperímetro, Chaves Isoladas</td>
+                                <td><span class="badge-status status-disponivel">Disponível</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="Adm_Kits.js"></script>
+</body>
+</html>

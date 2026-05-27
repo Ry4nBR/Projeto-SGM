@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SGM - Movimentação e Estoque</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght=400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="Alm_Painel.css">
+</head>
+<body>
+
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <h2>SGM</h2>
+                <span>Almoxarifado</span>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="Alm_Painel.html" class="nav-item active">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-5 14H4v-4h11v4zm0-5H4V9h11v4zm5 5h-4V9h4v9z"/></svg>
+                    Painel de Estoque
+                </a>
+                <a href="../login.html" class="nav-item btn-logout">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                    Sair
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="user-avatar">AL</div>
+                <div class="user-info">
+                    <p class="user-name">Marcos Souza</p>
+                    <span class="user-role">Almoxarife Líder</span>
+                </div>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="main-header">
+                <div class="header-title">
+                    <h1>Controle de Materiais e Ferramental</h1>
+                    <p>Controle estrito de entrega e devolução de ferramentas, requisições de peças e níveis mínimos de segurança.</p>
+                </div>
+            </header>
+
+            <div class="tabs-container">
+                <button class="tab-link active" data-tab="tab-movimentacao">Retiradas e Devoluções</button>
+                <button class="tab-link" data-tab="tab-inventario">Inventário e Peças de Reposição</button>
+                <button class="tab-link" data-tab="tab-entradas">Entrada de Notas Fiscais</button>
+            </div>
+
+            <section class="content-body">
+                
+                <div id="tab-movimentacao" class="tab-content active">
+                    <div class="card-section-title">
+                        <h3>Solicitações de Retirada (Liberação de Ativos)</h3>
+                    </div>
+                    <div class="table-card margin-bottom-lg">
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Tipo</th>
+                                        <th>Código OS Vinculada</th>
+                                        <th>Técnico Solicitante</th>
+                                        <th>Ferramenta / Peça Solicitada</th>
+                                        <th>Ação Física</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr id="row-saida-1">
+                                        <td><span class="badge-type type-kit">Kit Completo</span></td>
+                                        <td class="col-id">#OS-2026-102</td>
+                                        <td><strong>Carlos Silva</strong></td>
+                                        <td><span class="item-name">Kit Padrão Mecânica Avançada #02</span></td>
+                                        <td><button class="btn-action btn-dispensar" onclick="dispensarItem('row-saida-1', 'Kit Padrão Mecânica Avançada #02')">Baixar e Entregar</button></td>
+                                    </tr>
+                                    <tr id="row-saida-2">
+                                        <td><span class="badge-type type-avulso">Item Avulso</span></td>
+                                        <td class="col-id">#OS-2026-105</td>
+                                        <td><strong>Carlos Silva</strong></td>
+                                        <td><span class="item-name">Multímetro Digital Fluke 179</span></td>
+                                        <td><button class="btn-action btn-dispensar" onclick="dispensarItem('row-saida-2', 'Multímetro Digital Fluke 179')">Baixar e Entregar</button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="card-section-title">
+                        <h3>Retorno de Ferramental para o Estoque</h3>
+                    </div>
+                    <div class="table-card">
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Código Retorno</th>
+                                        <th>Técnico Devolvendo</th>
+                                        <th>Material a Recolher</th>
+                                        <th>Status do Ativo</th>
+                                        <th>Ação de Recebimento</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr id="row-retorno-1">
+                                        <td class="col-id">#RET-849</td>
+                                        <td>Carlos Silva</td>
+                                        <td>Kit Padrão Mecânica Avançada #02</td>
+                                        <td><span class="badge-status status-aguardando">Em campo com técnico</span></td>
+                                        <td><button class="btn-action btn-confirmar" onclick="confirmarDevolucao('row-retorno-1', 'Kit Padrão Mecânica Avançada #02')">Confirmar Recebimento Físico</button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="tab-inventario" class="tab-content">
+                    <div class="card-section-title">
+                        <h3>Inventário de Peças de Reposição e Ferramental</h3>
+                    </div>
+                    <div class="table-card">
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Código</th>
+                                        <th>Nome do Componente / Ferramenta</th>
+                                        <th>Categoria</th>
+                                        <th>Qtd Atual</th>
+                                        <th>Qtd Mínima</th>
+                                        <th>Localização de Fábrica</th>
+                                        <th>Disponibilidade</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="row-alert-stock">
+                                        <td class="col-id">PE-0084</td>
+                                        <td><strong>Contator de Potência Siemens 24V</strong></td>
+                                        <td>Peça de Reposição</td>
+                                        <td class="stock-critical">2 un</td>
+                                        <td>5 un</td>
+                                        <td>Prateleira A1 - Gaveta 3</td>
+                                        <td><span class="indicator ind-alerta">Abaixo do Mínimo</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="col-id">FE-0112</td>
+                                        <td>Kit Padrão Mecânica Avançada #02</td>
+                                        <td>Kit Ferramentas</td>
+                                        <td>0 un</td>
+                                        <td>1 un</td>
+                                        <td>Carrinho Móvel 02</td>
+                                        <td><span class="indicator ind-uso">Em Uso / Indisponível</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="col-id">FE-0340</td>
+                                        <td>Multímetro Digital Fluke 179</td>
+                                        <td>Ferramenta Avulsa</td>
+                                        <td>4 un</td>
+                                        <td>2 un</td>
+                                        <td>Armário Principal B</td>
+                                        <td><span class="indicator ind-disponivel">Disponível</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="col-id">PE-0912</td>
+                                        <td>Rolamento Blindado NSK 6204</td>
+                                        <td>Peça de Reposição</td>
+                                        <td>14 un</td>
+                                        <td>10 un</td>
+                                        <td>Prateleira C3</td>
+                                        <td><span class="indicator ind-disponivel">Disponível</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="tab-entradas" class="tab-content">
+                    <div class="entradas-grid">
+                        <div class="card-base">
+                            <div class="card-header-inside">
+                                <h3>Cadastro Unificado de Material</h3>
+                            </div>
+                            <form id="form-cadastro-manual">
+                                <div class="form-group">
+                                    <label for="txt-nome-item">Nome do Item/Peça</label>
+                                    <input type="text" id="txt-nome-item" placeholder="Ex: Sensor Indutivo M12" required>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="txt-qtd-inicial">Quantidade Adicionada</label>
+                                        <input type="number" id="txt-qtd-inicial" min="1" placeholder="10" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="txt-qtd-minima">Estoque Mínimo de Alerta</label>
+                                        <input type="number" id="txt-qtd-minima" min="1" placeholder="2" required>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn-primary-action">Dar Entrada no Saldo</button>
+                            </form>
+                        </div>
+
+                        <div class="card-base alignment-dropzone">
+                            <div class="card-header-inside">
+                                <h3>Entrada Automatizada via XML (NF-e)</h3>
+                            </div>
+                            <p class="dropzone-text-instruction">Suba o arquivo XML da nota de compra de peças fornecidas para atualizar o estoque físico em lote instantaneamente.</p>
+                            
+                            <div class="upload-dropzone" id="area-dropzone">
+                                <svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V15"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                                <p>Arraste o arquivo XML da NF aqui</p>
+                                <span>ou clique para carregar o arquivo</span>
+                                <input type="file" id="file-xml-input" accept=".xml" class="hidden-file-input">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+        </main>
+    </div>
+
+    <script src="Alm_Painel.js"></script>
+</body>
+</html>

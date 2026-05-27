@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SGM ADM - Gestão de Usuários</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght=400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="Adm_Usuarios.css">
+</head>
+<body>
+
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <h2>SGM</h2>
+                <span>Módulo Administrador</span>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="Adm_Painel.html" class="nav-item">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H7c0-2.76 2.24-5 5-5s5 2.24 5 5c0 1.04-.42 1.99-1.07 2.75z"/></svg>
+                    Acompanhamento OS
+                </a>
+                <a href="Adm_Historico.html" class="nav-item">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                    Histórico de Máquinas
+                </a>
+                <a href="Adm_Kits.html" class="nav-item">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                    Padronização de Kits
+                </a>
+                <a href="Adm_Usuarios.html" class="nav-item active">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                    Controle de Usuários
+                </a>
+                <a href="../login.html" class="nav-item btn-logout">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                    Sair
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="user-avatar">AD</div>
+                <div class="user-info">
+                    <p class="user-name">Eng. Gestor</p>
+                    <span class="user-role">Administrador Master</span>
+                </div>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="main-header">
+                <div class="header-title">
+                    <h1>Controle de Cadastro e Perfis de Acesso</h1>
+                    <p>Gerencie as credenciais, matrículas e níveis de permissão dos colaboradores no sistema industrial.</p>
+                </div>
+            </header>
+
+            <section class="card-base form-user-section">
+                <div class="card-header-inside">
+                    <h3>Cadastrar Novo Usuário</h3>
+                </div>
+                <form id="form-cadastro-usuario">
+                    <div class="form-grid-three-cols">
+                        <div class="form-group">
+                            <label for="txt-user-name">Nome Completo</label>
+                            <input type="text" id="txt-user-name" placeholder="Ex: Roberto Alencar" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="txt-user-matricula">Matrícula (RE)</label>
+                            <input type="text" id="txt-user-matricula" placeholder="Ex: RE-58420" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="sel-user-level">Nível de Acesso</label>
+                            <select id="sel-user-level" required>
+                                <option value="" disabled selected>Selecione um perfil...</option>
+                                <option value="Administrador">Administrador</option>
+                                <option value="Técnico">Técnico de Manutenção</option>
+                                <option value="Almoxarifado">Almoxarifado</option>
+                                <option value="Usuário da Produção">Usuário da Produção</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div id="subfield-especialidade" class="subfield-container field-hidden">
+                        <div class="form-group max-width-select">
+                            <label for="sel-tech-specialty">Especialidade Técnica do Colaborador</label>
+                            <select id="sel-tech-specialty">
+                                <option value="Geral" selected>Geral / Multidisciplinar</option>
+                                <option value="Mecânico">Mecânico</option>
+                                <option value="Eletricista">Eletricista</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-actions-wrapper">
+                        <button type="submit" class="btn-primary-action">Salvar e Ativar Colaborador</button>
+                    </div>
+                </form>
+            </section>
+
+            <div class="card-section-title">
+                <h3>Colaboradores Ativos no Sistema</h3>
+            </div>
+            <section class="table-card">
+                <div class="table-container">
+                    <table id="table-users-list">
+                        <thead>
+                            <tr>
+                                <th>Matrícula (RE)</th>
+                                <th>Nome do Colaborador</th>
+                                <th>Nível de Acesso</th>
+                                <th>Especialidade / Função</th>
+                                <th>Status</th>
+                                <th class="text-center">Ações Gerenciais</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr id="user-row-1">
+                                <td class="col-id">RE-10482</td>
+                                <td><strong>Carlos Silva</strong></td>
+                                <td><span class="badge-role role-tecnico">Técnico</span></td>
+                                <td>Mecânico</td>
+                                <td><span class="indicator-status active-true">Ativo</span></td>
+                                <td>
+                                    <div class="table-actions-flex">
+                                        <button class="btn-table-action btn-edit" onclick="editarUsuario('RE-10482', 'Carlos Silva')">Editar</button>
+                                        <button class="btn-table-action btn-deactivate" onclick="desativarUsuario('user-row-1', 'Carlos Silva')">Desativar</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr id="user-row-2">
+                                <td class="col-id">RE-20941</td>
+                                <td><strong>Marcos Souza</strong></td>
+                                <td><span class="badge-role role-almoxarifado">Almoxarifado</span></td>
+                                <td>Logística de Ativos</td>
+                                <td><span class="indicator-status active-true">Ativo</span></td>
+                                <td>
+                                    <div class="table-actions-flex">
+                                        <button class="btn-table-action btn-edit" onclick="editarUsuario('RE-20941', 'Marcos Souza')">Editar</button>
+                                        <button class="btn-table-action btn-deactivate" onclick="desativarUsuario('user-row-2', 'Marcos Souza')">Desativar</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr id="user-row-3">
+                                <td class="col-id">RE-30588</td>
+                                <td><strong>Eng. Gestor</strong></td>
+                                <td><span class="badge-role role-admin">Administrador</span></td>
+                                <td>Engenharia Master</td>
+                                <td><span class="indicator-status active-true">Ativo</span></td>
+                                <td>
+                                    <div class="table-actions-flex">
+                                        <button class="btn-table-action btn-edit" onclick="editarUsuario('RE-30588', 'Eng. Gestor')">Editar</button>
+                                        <button class="btn-table-action btn-deactivate" onclick="desativarUsuario('user-row-3', 'Eng. Gestor')">Desativar</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="Adm_Usuarios.js"></script>
+</body>
+</html>

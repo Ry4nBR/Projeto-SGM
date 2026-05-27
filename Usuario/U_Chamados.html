@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SGM - Meus Chamados</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="U_Chamados.css">
+</head>
+<body>
+
+    <div class="app-container">
+       <aside class="sidebar">
+    <div class="sidebar-logo">
+        <h2>SGM</h2>
+        <span>Wanderillo de Castro</span>
+    </div>
+    <nav class="sidebar-nav">
+        <a href="U_AberturaOS.html" class="nav-item">
+            Abertura de OS
+        </a>
+        <a href="U_Chamados.html" class="nav-item active">
+            Meus Chamados
+        </a>
+
+        <a href="../login.html" class="nav-item btn-logout">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                <polyline points="16 17 21 12 16 7"></polyline>
+                <line x1="21" y1="12" x2="9" y2="12"></line>
+            </svg>
+            Sair
+        </a>
+    </nav>
+    <div class="sidebar-footer">
+        </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="main-header">
+                <div class="header-title">
+                    <h1>Meus Chamados</h1>
+                    <p>Acompanhe em tempo real o andamento e o histórico das suas ordens de serviço</p>
+                </div>
+            </header>
+
+            <section class="content-body">
+                <div class="filter-card">
+                    <div class="search-box">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                        <input type="text" id="input-busca" placeholder="Buscar por código ou nome da máquina...">
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label for="select-filtro-status" class="sr-only">Filtrar por Status</label>
+                        <select id="select-filtro-status">
+                            <option value="todos">Todos os Status</option>
+                            <option value="Aguardando Técnico">Aguardando Técnico</option>
+                            <option value="Em Manutenção">Em Manutenção</option>
+                            <option value="Aguardando Peças">Aguardando Peças</option>
+                            <option value="Aguardando Devolução de Kit">Aguardando Devolução de Kit</option>
+                            <option value="Concluído">Concluído</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="table-card">
+                    <div class="table-container">
+                        <table id="tabela-os">
+                            <thead>
+                                <tr>
+                                    <th>ID da OS</th>
+                                    <th>Data / Hora</th>
+                                    <th>Máquina</th>
+                                    <th>Status Atual</th>
+                                    <th>Técnico Atribuído</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr data-status="Aguardando Técnico" data-maquina="MQ-02">
+                                    <td class="col-id">#OS-2026-089</td>
+                                    <td>27/05/2026 09:15</td>
+                                    <td><span class="machine-code">MQ-02</span> Prensa Hidráulica de Solado</td>
+                                    <td><span class="badge status-aguardando">Aguardando Técnico</span></td>
+                                    <td class="col-tecnico text-muted">Não atribuído</td>
+                                </tr>
+                                <tr data-status="Em Manutenção" data-maquina="MQ-01">
+                                    <td class="col-id">#OS-2026-085</td>
+                                    <td>27/05/2026 08:30</td>
+                                    <td><span class="machine-code">MQ-01</span> Máquina de Costura Reta</td>
+                                    <td><span class="badge status-manutencao">Em Manutenção</span></td>
+                                    <td class="col-tecnico">Carlos Silva (Elétrica)</td>
+                                </tr>
+                                <tr data-status="Aguardando Peças" data-maquina="MQ-05">
+                                    <td class="col-id">#OS-2026-077</td>
+                                    <td>26/05/2026 14:22</td>
+                                    <td><span class="machine-code">MQ-05</span> Esteira de Secagem</td>
+                                    <td><span class="badge status-pecas">Aguardando Peças</span></td>
+                                    <td class="col-tecnico">Marcos Souza (Mecânica)</td>
+                                </tr>
+                                <tr data-status="Aguardando Devolução de Kit" data-maquina="MQ-03">
+                                    <td class="col-id">#OS-2026-074</td>
+                                    <td>26/05/2026 10:05</td>
+                                    <td><span class="machine-code">MQ-03</span> Chanfradora de Couro</td>
+                                    <td><span class="badge status-devolucao">Aguardando Devolução de Kit</span></td>
+                                    <td class="col-tecnico">Carlos Silva (Elétrica)</td>
+                                </tr>
+                                <tr data-status="Concluído" data-maquina="MQ-04">
+                                    <td class="col-id">#OS-2026-061</td>
+                                    <td>25/05/2026 11:40</td>
+                                    <td><span class="machine-code">MQ-04</span> Rebitadeira Semiautomática</td>
+                                    <td><span class="badge status-concluido">Concluído</span></td>
+                                    <td class="col-tecnico">Lucas Lima (Pneumática)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="empty-state" class="empty-state hidden">
+                        <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                        <h3>Nenhum chamado encontrado</h3>
+                        <p>Tente ajustar os termos da busca ou mudar o filtro de status.</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="U_Chamados.js"></script>
+</body>
+</html>
