@@ -3,11 +3,33 @@ document.addEventListener('DOMContentLoaded', () => {
     const radioStatus = document.querySelectorAll('input[name="status_maquina"]');
     const panelCriticidade = document.getElementById('panel-criticidade');
     const valueCriticidade = document.getElementById('criticidade-value');
+    const selectMaquina = document.getElementById('select-maquina');
+
+    // 1. Carregar nome do usuário logado na barra lateral
+    const user = mockDb.getLoggedUser();
+    if (user) {
+        const spanUser = document.querySelector('.sidebar-logo span') || document.querySelector('.sidebar span');
+        if (spanUser) spanUser.textContent = user.nome;
+    }
+
+    // 2. Carregar seletor de máquinas dinamicamente a partir do mockDb
+    function carregarMaquinas() {
+        if (!selectMaquina) return;
+        selectMaquina.innerHTML = '<option value="" disabled selected>Selecione a máquina...</option>';
+        const equipamentos = mockDb.getEquipamentos();
+        equipamentos.forEach(eq => {
+            const opt = document.createElement('option');
+            opt.value = eq.tag;
+            opt.textContent = `${eq.tag} - ${eq.nome}`;
+            selectMaquina.appendChild(opt);
+        });
+    }
+    carregarMaquinas();
 
     // Mapeamento dinâmico de criticidade baseado nas escolhas do chão de fábrica
     function atualizarCriticidade() {
         let statusSelecionado = '';
-        
+
         radioStatus.forEach(radio => {
             if (radio.checked) {
                 statusSelecionado = radio.value;
@@ -32,23 +54,38 @@ document.addEventListener('DOMContentLoaded', () => {
         radio.addEventListener('change', atualizarCriticidade);
     });
 
-    // Simulação do envio e preparação para futura integração com o backend
+    // Envio real persistente no mockDb
     form.addEventListener('submit', (e) => {
         e.preventDefault();
 
+        const maquinaTag = selectMaquina.value;
+        const condicao = document.querySelector('input[name="status_maquina"]:checked').value;
+        const criticidadeTexto = valueCriticidade.textContent;
+        // Pega 'Alta' ou 'Média'
+        const criticidadeCalculada = criticidadeTexto.includes('ALTA') ? 'Alta' : 'Média';
+
         const dadosFormulario = {
-            idMaquina: document.getElementById('select-maquina').value,
+            equipamento_tag: maquinaTag,
             setor: document.getElementById('select-setor').value,
-            especialidade: document.getElementById('select-especialidade').value,
-            descricao: document.getElementById('txt-descricao').value,
-            condicaoMaquina: document.querySelector('input[name="status_maquina"]:checked').value,
-            criticidadeCalculada: valueCriticidade.textContent
+            tipo_falha: document.getElementById('select-especialidade').value,
+            descricao_problema: document.getElementById('txt-descricao').value,
+            condicao_maquina: condicao,
+            criticidade: criticidadeCalculada,
+            solicitante_id: user ? user.id : 3 // fallback para o id 3 (Wanderillo) se sem login
         };
 
-        // Exemplo visual de sucesso (pode ser trocado por uma requisição Fetch API no futuro)
-        console.log('Enviando Ordem de Serviço estruturada:', dadosFormulario);
-        alert(`Ordem de Serviço enviada com sucesso para a máquina ${dadosFormulario.idMaquina}!`);
-        
+        // Salvar OS
+        const novaOS = mockDb.saveOrdemServico(dadosFormulario);
+
+        // Se a máquina estiver parada, atualiza seu status no cadastro
+        if (condicao === 'parada') {
+            mockDb.updateEquipamento(maquinaTag, { status_equipamento: 'Parado' });
+        } else {
+            mockDb.updateEquipamento(maquinaTag, { status_equipamento: 'Em Manutenção' });
+        }
+
+        alert(`Ordem de Serviço enviada com sucesso! Código gerado: ${novaOS.codigo_os}`);
+
         // Reseta o formulário e o painel de criticidade
         form.reset();
         atualizarCriticidade();
