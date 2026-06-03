@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Captura dos formulários operacionais e tabela
-    const formItemIndividual = document.getElementById('form-add-item-individual');
+    const formCadastroMaquina = document.getElementById('form-cadastro-maquina');
     const formMontarKit = document.getElementById('form-build-kit');
     const selectMaquina = document.getElementById('sel-kit-machine');
     const checklistContainer = document.querySelector('.checkbox-list-container');
@@ -45,8 +45,8 @@ document.addEventListener('DOMContentLoaded', () => {
         checklistContainer.innerHTML = '';
 
         const itens = mockDb.getItensAlmoxarifado();
-        // Filtra apenas itens que são ferramentas ou avulsos
-        const ferramentas = itens.filter(i => i.categoria === 'Ferramenta Avulsa' || i.categoria === 'Kit Ferramentas');
+        // Filtra apenas itens que são ferramentas avulsas (exclui kits)
+        const ferramentas = itens.filter(i => i.categoria === 'Ferramenta Avulsa');
 
         if (ferramentas.length === 0) {
             checklistContainer.innerHTML = '<p style="font-size:11px; color:var(--neutral-medium); font-style:italic;">Nenhuma ferramenta cadastrada no Almoxarifado.</p>';
@@ -70,13 +70,36 @@ document.addEventListener('DOMContentLoaded', () => {
         tabelaKitsCorpo.innerHTML = '';
 
         const kits = mockDb.getKitsPadrao();
+        const itensAlmoxarifado = mockDb.getItensAlmoxarifado();
+        const cautelas = mockDb.getControleFerramental();
+        const usuarios = mockDb.getUsuarios();
 
         kits.forEach(kit => {
             const tr = document.createElement('tr');
             
-            // Lógica de badge de status
+            // Correlaciona com inventário físico
+            const itemEstoque = itensAlmoxarifado.find(i => i.nome.toLowerCase() === kit.nome_kit.toLowerCase());
+            const qtdEstoque = itemEstoque ? `${itemEstoque.qtd_atual} un` : '0 un';
+
+            // Correlaciona com cautelas físicas ativas
+            const cautelaAtiva = cautelas.find(c => 
+                c.item_nome.toLowerCase() === kit.nome_kit.toLowerCase() && 
+                c.status_ativo === 'Em campo com técnico'
+            );
+
+            let statusRastreabilidade = 'Disponível';
             let badgeClass = 'status-disponivel';
-            if (kit.status !== 'Disponível') {
+
+            if (cautelaAtiva) {
+                const tecnico = usuarios.find(u => u.id === cautelaAtiva.tecnico_id);
+                const nomeTecnico = tecnico ? tecnico.nome : 'Técnico';
+                statusRastreabilidade = `Com ${nomeTecnico} na OS #${cautelaAtiva.os_codigo}`;
+                badgeClass = 'status-em-uso';
+            } else if (itemEstoque && itemEstoque.qtd_atual === 0) {
+                statusRastreabilidade = 'Indisponível';
+                badgeClass = 'status-em-uso';
+            } else if (kit.status && kit.status.includes('uso')) {
+                statusRastreabilidade = kit.status;
                 badgeClass = 'status-em-uso';
             }
 
@@ -84,42 +107,56 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td><strong>${kit.nome_kit}</strong></td>
                 <td>${kit.maquina_vinculo}</td>
                 <td>${kit.ferramentas}</td>
-                <td><span class="badge-status ${badgeClass}">${kit.status}</span></td>
+                <td>${qtdEstoque}</td>
+                <td><span class="badge-status ${badgeClass}">${statusRastreabilidade}</span></td>
             `;
             tabelaKitsCorpo.appendChild(tr);
         });
     }
 
-    // 5. Escuta do envio do formulário de Cadastro de Ferramentas/Itens Avulsos
-    formItemIndividual.addEventListener('submit', (e) => {
+    // 5. Escuta do envio do formulário de Cadastro de Máquinas
+    formCadastroMaquina.addEventListener('submit', (e) => {
         e.preventDefault();
 
-        const nomeItem = document.getElementById('txt-item-name').value.trim();
-        const qtdEstoque = parseInt(document.getElementById('num-item-stock').value);
-        const tipoAtivo = document.getElementById('sel-item-type').value; // 'Ferramenta' ou 'Peça de Reposição'
+        const codigo = document.getElementById('txt-maq-codigo').value.trim().toUpperCase();
+        const nome = document.getElementById('txt-maq-nome').value.trim();
+        const setor = document.getElementById('sel-maq-setor').value;
+        const fabricante = document.getElementById('txt-maq-fabricante').value.trim();
+        const modelo = document.getElementById('txt-maq-modelo').value.trim();
+        const serie = document.getElementById('txt-maq-serie').value.trim();
+        const aquisicao = document.getElementById('txt-maq-aquisicao').value;
+        const nf = document.getElementById('txt-maq-nf').value.trim();
+        const descricao = document.getElementById('txt-maq-desc').value.trim();
+        const status = document.getElementById('sel-maq-status').value;
 
-        // Converte o tipo de ativo para a categoria do banco de dados
-        let categoriaMapeada = 'Ferramenta Avulsa';
-        if (tipoAtivo === 'Peça de Reposição') {
-            categoriaMapeada = 'Peça de Reposição';
+        // Valida se já existe uma máquina com esse código (TAG)
+        const maquinas = mockDb.getEquipamentos();
+        if (maquinas.some(m => m.tag === codigo)) {
+            alert(`Erro: Já existe uma máquina cadastrada com a TAG ${codigo}.`);
+            return;
         }
 
         // Salva no banco de dados local
-        mockDb.saveItemAlmoxarifado({
-            nome: nomeItem,
-            categoria: categoriaMapeada,
-            qtd_atual: qtdEstoque,
-            qtd_minima: 1,
-            localizacao: 'Armário Geral C - Engenharia'
+        mockDb.saveEquipamento({
+            tag: codigo,
+            nome: nome,
+            setor: setor,
+            fabricante: fabricante,
+            modelo: modelo,
+            num_serie: serie,
+            data_aquisicao: aquisicao,
+            nf: nf,
+            descricao: descricao,
+            status_equipamento: status,
+            critico: status === 'Parado' || status === 'Em Manutenção'
         });
 
-        alert(`Sucesso no Inventário!\nItem: "${nomeItem}" (${categoriaMapeada})\nQuantidade inserida: ${qtdEstoque} unidades.\nO estoque foi atualizado.`);
+        alert(`Sucesso! A máquina "${nome}" (${codigo}) foi cadastrada e ativada.`);
 
-        formItemIndividual.reset();
+        formCadastroMaquina.reset();
         
-        // Recarregar checklists e tabela
-        carregarChecklistFerramentas();
-        renderizarTabelaKits();
+        // Recarregar seletor de máquinas no bloco de kits
+        carregarMaquinasParaKits();
     });
 
     // 6. Escuta do envio do formulário de Engenharia e Montagem de Kits Padrão

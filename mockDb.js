@@ -912,4 +912,36 @@ const mockDb = {
 document.addEventListener('DOMContentLoaded', () => {
     mockDb.init();
     mockDb.injectDeveloperHUD();
+
+    // Atualiza o avatar da barra lateral de forma reativa após os scripts da página carregarem
+    setTimeout(() => {
+        const user = mockDb.getLoggedUser();
+        if (user) {
+            const avatarUser = document.querySelector('.sidebar-footer .user-avatar') || document.querySelector('.user-avatar');
+            const spanUser = document.querySelector('.sidebar-footer .user-name') || document.querySelector('.user-name');
+            const roleUser = document.querySelector('.sidebar-footer .user-role') || document.querySelector('.user-role');
+            
+            if (spanUser) spanUser.textContent = user.nome;
+            if (roleUser) {
+                // Preserva especialidades específicas se for técnico
+                if (user.cargo === 'Técnico') {
+                    roleUser.textContent = user.especialidade ? `Téc. ${user.especialidade}` : 'Técnico';
+                } else {
+                    roleUser.textContent = user.cargo === 'Almoxarife' ? 'Almoxarife Líder' : (user.cargo === 'Administrador' ? 'Administrador Master' : 'Usuário da Produção');
+                }
+            }
+            
+            if (avatarUser) {
+                if (user.foto) {
+                    avatarUser.textContent = '';
+                    avatarUser.style.backgroundImage = `url(${user.foto})`;
+                    avatarUser.style.backgroundSize = 'cover';
+                    avatarUser.style.backgroundPosition = 'center';
+                } else {
+                    avatarUser.style.backgroundImage = '';
+                    avatarUser.textContent = user.nome.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+                }
+            }
+        }
+    }, 50);
 });

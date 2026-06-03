@@ -10,8 +10,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnSubmit = formCadastro.querySelector('button[type="submit"]');
     const tabelaUsuariosCorpo = document.getElementById('table-users-list').querySelector('tbody');
 
-    // Variável de controle para edição
+    // Novos campos
+    const inputSenha = document.getElementById('txt-user-senha');
+    const inputConfirmarSenha = document.getElementById('txt-user-confirmar-senha');
+    const inputFoto = document.getElementById('file-user-foto');
+
+    // Variáveis de controle para edição e imagem Base64
     let usuarioEmEdicaoId = null;
+    let fotoBase64 = null;
 
     // 1. Carregar nome do usuário logado na barra lateral
     const user = mockDb.getLoggedUser();
@@ -20,7 +26,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const avatarUser = document.querySelector('.sidebar-footer .user-avatar');
         if (spanUser) spanUser.textContent = user.nome;
         if (avatarUser && user.nome) {
-            avatarUser.textContent = user.nome.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+            if (user.foto) {
+                avatarUser.innerHTML = '';
+                avatarUser.style.backgroundImage = `url(${user.foto})`;
+                avatarUser.style.backgroundSize = 'cover';
+                avatarUser.style.backgroundPosition = 'center';
+            } else {
+                avatarUser.textContent = user.nome.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+            }
         }
     }
 
@@ -33,6 +46,18 @@ document.addEventListener('DOMContentLoaded', () => {
             containerSubcampo.classList.add('field-hidden');
             seletorEspecialidade.removeAttribute('required');
             seletorEspecialidade.value = 'Geral'; // Reseta para o padrão
+        }
+    });
+
+    // Tratar upload de imagem e conversão para Base64
+    inputFoto.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                fotoBase64 = event.target.result;
+            };
+            reader.readAsDataURL(file);
         }
     });
 
@@ -69,9 +94,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const statusClass = u.status_usuario === 'Ativo' ? 'active-true' : 'active-false';
 
+            // Renderiza foto Base64 ou iniciais
+            let photoHTML = '';
+            if (u.foto) {
+                photoHTML = `<div class="user-avatar-mini" style="background-image: url(${u.foto}); background-size: cover; background-position: center; margin-right: 10px;"></div>`;
+            } else {
+                photoHTML = `<div class="user-avatar-mini user-avatar-placeholder" style="margin-right: 10px;">${u.nome.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()}</div>`;
+            }
+
             tr.innerHTML = `
                 <td class="col-id">${u.matricula}</td>
-                <td><strong>${u.nome}</strong></td>
+                <td style="display: flex; align-items: center;">
+                    ${photoHTML}
+                    <strong>${u.nome}</strong>
+                </td>
                 <td><span class="badge-role ${classeBadge}">${nivelExibido}</span></td>
                 <td>${funcao}</td>
                 <td><span class="indicator-status ${statusClass}">${u.status_usuario}</span></td>
@@ -116,7 +152,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         document.getElementById('txt-user-name').value = u.nome;
         document.getElementById('txt-user-matricula').value = u.matricula;
-        
+        inputSenha.value = u.senha || '';
+        inputConfirmarSenha.value = u.senha || '';
+        fotoBase64 = u.foto || null;
+        inputFoto.value = ''; // Reseta o input do arquivo
+
         // Mapeia cargo interno para o seletor do HTML
         let nivelHTML = u.cargo;
         if (u.cargo === 'Almoxarife') nivelHTML = 'Almoxarifado';
@@ -162,6 +202,19 @@ document.addEventListener('DOMContentLoaded', () => {
         const nome = document.getElementById('txt-user-name').value.trim();
         const matricula = document.getElementById('txt-user-matricula').value.trim();
         const nivelHTML = seletorNivelAcesso.value;
+        const senha = inputSenha.value;
+        const confirmarSenha = inputConfirmarSenha.value;
+
+        // Validações de senha
+        if (senha.length < 6) {
+            alert('A senha deve ter no mínimo 6 caracteres.');
+            return;
+        }
+
+        if (senha !== confirmarSenha) {
+            alert('As senhas não coincidem. Verifique a confirmação de senha.');
+            return;
+        }
 
         // Mapeia seletor do HTML para o cargo interno do bd.md
         let cargoInterno = 'Operador';
@@ -184,12 +237,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 matricula: matricula,
                 cargo: cargoInterno,
                 especialidade: especialidade,
-                email: emailMock
+                email: emailMock,
+                senha: senha,
+                foto: fotoBase64
             });
             alert(`Usuário atualizado com sucesso no banco de dados!`);
             
             // Reseta controles de edição
             usuarioEmEdicaoId = null;
+            fotoBase64 = null;
             btnSubmit.textContent = 'Salvar e Ativar Colaborador';
             document.querySelector('.form-user-section h3').textContent = 'Cadastrar Novo Usuário';
         } else {
@@ -207,7 +263,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 cargo: cargoInterno,
                 especialidade: especialidade,
                 email: emailMock,
-                senha: 'senha123', // Padrão
+                senha: senha,
+                foto: fotoBase64,
                 status_usuario: 'Ativo'
             });
             alert(`Usuário cadastrado com sucesso sob a matrícula ${matricula}!`);
@@ -215,6 +272,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Limpa campos e recarrega
         formCadastro.reset();
+        fotoBase64 = null;
         containerSubcampo.classList.add('field-hidden');
         seletorEspecialidade.removeAttribute('required');
         renderizarTabelaUsuarios();

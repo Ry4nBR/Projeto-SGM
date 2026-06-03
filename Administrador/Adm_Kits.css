@@ -143,7 +143,7 @@ body {
 
 label { font-size: 13px; font-weight: 600; color: var(--neutral-dark); }
 
-input[type="text"], input[type="number"], select {
+input[type="text"], input[type="number"], input[type="date"], select, textarea {
     font-family: var(--font-main);
     font-size: 15px;
     padding: 12px;

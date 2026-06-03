@@ -200,7 +200,6 @@ document.addEventListener('DOMContentLoaded', () => {
             window.location.href = `T_MinhasOS.html?os=${codigoOS}`;
         }
     }
-    }
 
     // Inicialização da fila
     renderizarFilaGeral();

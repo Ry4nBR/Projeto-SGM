@@ -1,0 +1,113 @@
+@startuml Sistema de Gerenciamento de Manutenção (SGM) - Casos de Uso
+
+' Configurações visuais do diagrama
+left to right direction
+skinparam packageStyle rectangle
+skinparam actorStyle awesome
+skinparam shadowing false
+skinparam defaultFontName "Arial"
+
+' Definição das Cores
+skinparam actor {
+    BackgroundColor #E2E8F0
+    BorderColor #4A5568
+}
+skinparam usecase {
+    BackgroundColor #F7FAFC
+    BorderColor #4A5568
+    ArrowColor #718096
+}
+
+actor "Usuário Autenticado" as User
+
+package "Perfis de Acesso" {
+    actor "Operador\n(Chão de Fábrica)" as Operador
+    actor "Técnico de Manutenção" as Tecnico
+    actor "Almoxarife\n(Estoque)" as Almoxarife
+    actor "Administrador Geral" as Admin
+}
+
+' Herança de Atores (Todos são Usuários Autenticados)
+User <|-- Operador
+User <|-- Tecnico
+User <|-- Almoxarife
+User <|-- Admin
+
+rectangle "Sistema de Gerenciamento de Manutenção (SGM)" {
+    
+    ' Casos de Uso Comuns / Sistema
+    usecase "Autenticar no Sistema (Login)" as UC_Login
+    usecase "Acessar Painel de Desenvolvimento (DevHUD)" as UC_DevHUD
+    usecase "Inspecionar / Resetar Banco Local (LocalStorage)" as UC_ResetDb
+    
+    ' Casos de Uso - Operador
+    usecase "Abrir Chamado / Ordem de Serviço (OS)" as UC_AbrirOS
+    usecase "Acompanhar Status de Chamados Abertos" as UC_VerChamadosOperador
+    usecase "Selecionar Ativo / Equipamento" as UC_SelecionarAtivo
+    usecase "Informar Condição da Máquina" as UC_CondicaoMaquina
+    usecase "Calcular Criticidade Automaticamente" as UC_CalcCriticidade
+    
+    ' Casos de Uso - Técnico
+    usecase "Visualizar Fila Geral de Chamados" as UC_VerFilaChamados
+    usecase "Assumir Ordem de Serviço (OS)" as UC_AssumirOS
+    usecase "Gerenciar Minhas OS" as UC_GerMinhasOS
+    usecase "Solicitar Peças Avulsas / Kits de Ferramentas" as UC_SolicitarMaterial
+    usecase "Finalizar Manutenção (Registrar Parecer Técnico)" as UC_FinalizarManutencao
+    
+    ' Casos de Uso - Almoxarife
+    usecase "Visualizar Requisições de Materiais Pendentes" as UC_VerRequisicoes
+    usecase "Liberar Materiais / Baixar e Entregar Itens" as UC_BaixarEntrega
+    usecase "Atualizar Estoque do Almoxarifado" as UC_AtualizarEstoque
+    usecase "Gerar Cautela de Retorno" as UC_GerarCautela
+    usecase "Confirmar Recebimento Físico (Devolução)" as UC_ConfirmarDevolucao
+    usecase "Visualizar Inventário e Alertas de Qtd Mínima" as UC_VerInventario
+    usecase "Registrar Entrada de Estoque (Manual / XML NF-e)" as UC_EntradaEstoque
+    
+    ' Casos de Uso - Administrador
+    usecase "Acessar Dashboard Administrativo (Métricas)" as UC_AdmDashboard
+    usecase "Consultar Histórico Cronológico por Máquina" as UC_ConsultarHistorico
+    usecase "Gerenciar Usuários (Cadastrar/Editar/Desativar)" as UC_GerenciarUsuarios
+    usecase "Gerenciar Kits de Ferramentas Padrão" as UC_GerenciarKits
+    usecase "Gerenciar Ativos / Equipamentos" as UC_GerenciarEquipamentos
+    usecase "Gerar Log Automático de Intervenção" as UC_GerarLog
+}
+
+' Associações - Usuário Autenticado (Geral)
+User --> UC_Login
+User --> UC_DevHUD
+UC_DevHUD ..> UC_ResetDb : <<include>>
+
+' Associações - Operador
+Operador --> UC_AbrirOS
+Operador --> UC_VerChamadosOperador
+UC_AbrirOS ..> UC_SelecionarAtivo : <<include>>
+UC_AbrirOS ..> UC_CondicaoMaquina : <<include>>
+UC_AbrirOS ..> UC_CalcCriticidade : <<include>>
+
+' Associações - Técnico
+Tecnico --> UC_VerFilaChamados
+Tecnico --> UC_AssumirOS
+Tecnico --> UC_GerMinhasOS
+Tecnico --> UC_SolicitarMaterial
+Tecnico --> UC_FinalizarManutencao
+
+' Associações - Almoxarife
+Almoxarife --> UC_VerRequisicoes
+Almoxarife --> UC_BaixarEntrega
+Almoxarife --> UC_ConfirmarDevolucao
+Almoxarife --> UC_VerInventario
+Almoxarife --> UC_EntradaEstoque
+
+UC_BaixarEntrega ..> UC_AtualizarEstoque : <<include>>
+UC_BaixarEntrega ..> UC_GerarCautela : <<include>>
+UC_ConfirmarDevolucao ..> UC_AtualizarEstoque : <<include>>
+UC_ConfirmarDevolucao ..> UC_GerarLog : <<include>>
+
+' Associações - Administrador
+Admin --> UC_AdmDashboard
+Admin --> UC_ConsultarHistorico
+Admin --> UC_GerenciarUsuarios
+Admin --> UC_GerenciarKits
+Admin --> UC_GerenciarEquipamentos
+
+@enduml

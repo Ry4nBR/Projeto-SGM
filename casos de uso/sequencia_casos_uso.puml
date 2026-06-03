@@ -1,0 +1,312 @@
+' ==============================================================================
+' DIAGRAMA 1: UC-01 - ABRIR CHAMADO / ORDEM DE SERVIÇO (OS)
+' ==============================================================================
+@startuml UC-01: Abrir Chamado
+title UC-01: Abrir Chamado / Ordem de Serviço (OS)
+
+' Configurações visuais do diagrama (Mesmo padrão do Diagrama de Casos de Uso)
+skinparam shadowing false
+skinparam defaultFontName "Arial"
+
+skinparam actor {
+    BackgroundColor #E2E8F0
+    BorderColor #4A5568
+}
+
+skinparam participant {
+    BackgroundColor #F7FAFC
+    BorderColor #4A5568
+}
+
+skinparam boundary {
+    BackgroundColor #F7FAFC
+    BorderColor #4A5568
+}
+
+skinparam control {
+    BackgroundColor #F7FAFC
+    BorderColor #4A5568
+}
+
+skinparam database {
+    BackgroundColor #F7FAFC
+    BorderColor #4A5568
+}
+
+skinparam sequence {
+    ArrowColor #718096
+    LifeLineBorderColor #4A5568
+    LifeLineBackgroundColor #F7FAFC
+}
+
+actor Operador as "Operador (Chão de Fábrica)"
+boundary TelaAbertura as "U_AberturaOS (HTML/CSS)"
+control ControllerAbertura as "U_AberturaOS (JS)"
+database mockDb as "mockDb.js\n(LocalStorage)"
+
+Operador -> TelaAbertura : Preenche campos (Ativo, Setor, Falha, Condição)
+Operador -> TelaAbertura : Clica em "Abrir OS"
+TelaAbertura -> ControllerAbertura : submitForm(dados)
+
+alt Validação dos campos com sucesso
+    ControllerAbertura -> ControllerAbertura : calcularCriticidade(condicao)
+    note right: Condição = Parada -> Criticidade Alta\nCondição = Restrição -> Criticidade Média
+    
+    ControllerAbertura -> mockDb : salvarNovaOS(dadosOS)
+    activate mockDb
+    mockDb --> ControllerAbertura : Retorna Código OS (ex: OS-2026-001)
+    deactivate mockDb
+    
+    ControllerAbertura --> TelaAbertura : Exibe mensagem de Sucesso
+    TelaAbertura --> Operador : Redireciona para acompanhamento (U_Chamados.html)
+else Erro: Campos obrigatórios em branco
+    ControllerAbertura --> TelaAbertura : Retorna erros de validação
+    TelaAbertura --> Operador : Exibe alertas de preenchimento obrigatório
+end
+@enduml
+
+' ==============================================================================
+' DIAGRAMA 2: UC-02 - ASSUMIR ORDEM DE SERVIÇO (OS)
+' ==============================================================================
+@startuml UC-02: Assumir OS
+title UC-02: Assumir Ordem de Serviço (OS)
+
+' Configurações visuais do diagrama (Mesmo padrão do Diagrama de Casos de Uso)
+skinparam shadowing false
+skinparam defaultFontName "Arial"
+
+skinparam actor {
+    BackgroundColor #E2E8F0
+    BorderColor #4A5568
+}
+
+skinparam participant {
+    BackgroundColor #F7FAFC
+    BorderColor #4A5568
+}
+
+skinparam boundary {
+    BackgroundColor #F7FAFC
+    BorderColor #4A5568
+}
+
+skinparam control {
+    BackgroundColor #F7FAFC
+    BorderColor #4A5568
+}
+
+skinparam database {
+    BackgroundColor #F7FAFC
+    BorderColor #4A5568
+}
+
+skinparam sequence {
+    ArrowColor #718096
+    LifeLineBorderColor #4A5568
+    LifeLineBackgroundColor #F7FAFC
+}
+
+actor Tecnico as "Técnico de Manutenção"
+boundary FilaGeral as "T_Painel (HTML/CSS)"
+control ControllerPainel as "T_Painel (JS)"
+database mockDb as "mockDb.js\n(LocalStorage)"
+
+Tecnico -> FilaGeral : Visualiza fila ordenada por criticidade
+Tecnico -> FilaGeral : Clica em "Assumir OS" (ID da OS)
+FilaGeral -> ControllerPainel : assumirChamado(osId, tecnicoId)
+
+ControllerPainel -> mockDb : obterStatusOS(osId)
+activate mockDb
+mockDb --> ControllerPainel : Retorna status atual
+deactivate mockDb
+
+alt OS está Aberta / Pendente
+    ControllerPainel -> mockDb : atualizarStatusOS(osId, 'Em Andamento', tecnicoId)
+    activate mockDb
+    mockDb --> ControllerPainel : Sucesso
+    deactivate mockDb
+    ControllerPainel --> FilaGeral : Atualiza tabela (Fila)
+    FilaGeral --> Tecnico : Move a OS para a aba "Minhas OS" (T_MinhasOS.html)
+else OS já assumida por outro Técnico
+    ControllerPainel --> FilaGeral : Retorna erro "OS já assumida"
+    FilaGeral --> Tecnico : Exibe alerta e remove item da tela
+end
+@enduml
+
+' ==============================================================================
+' DIAGRAMA 3: UC-03 - LIBERAR MATERIAIS E GERAR CAUTELA
+' ==============================================================================
+@startuml UC-03: Liberar Materiais
+title UC-03: Liberar Materiais e Cautela
+
+' Configurações visuais do diagrama (Mesmo padrão do Diagrama de Casos de Uso)
+skinparam shadowing false
+skinparam defaultFontName "Arial"
+
+skinparam actor {
+    BackgroundColor #E2E8F0
+    BorderColor #4A5568
+}
+
+skinparam participant {
+    BackgroundColor #F7FAFC
+    BorderColor #4A5568
+}
+
+skinparam boundary {
+    BackgroundColor #F7FAFC
+    BorderColor #4A5568
+}
+
+skinparam control {
+    BackgroundColor #F7FAFC
+    BorderColor #4A5568
+}
+
+skinparam database {
+    BackgroundColor #F7FAFC
+    BorderColor #4A5568
+}
+
+skinparam sequence {
+    ArrowColor #718096
+    LifeLineBorderColor #4A5568
+    LifeLineBackgroundColor #F7FAFC
+}
+
+actor Almoxarife as "Almoxarife (Estoque)"
+boundary PainelAlmoxarifado as "Alm_Painel (HTML/CSS)"
+control ControllerAlmoxarifado as "Alm_Painel (JS)"
+database mockDb as "mockDb.js\n(LocalStorage)"
+
+Almoxarife -> PainelAlmoxarifado : Acessa aba "Fila de Requisições"
+Almoxarife -> PainelAlmoxarifado : Clicar em "Baixar e Entregar" (reqId)
+PainelAlmoxarifado -> ControllerAlmoxarifado : processarLiberacao(reqId)
+
+ControllerAlmoxarifado -> mockDb : verificarEstoqueItens(reqId)
+activate mockDb
+mockDb --> ControllerAlmoxarifado : Retorna saldos disponíveis
+deactivate mockDb
+
+alt Estoque Disponível
+    ControllerAlmoxarifado -> mockDb : decrementarEstoque(itens)
+    activate mockDb
+    mockDb --> ControllerAlmoxarifado : Confirmado
+    deactivate mockDb
+    
+    ControllerAlmoxarifado -> mockDb : criarCautelaFerramental(tecnicoId, itens)
+    activate mockDb
+    mockDb --> ControllerAlmoxarifado : Retorna Código Cautela (#RET-XXX)
+    deactivate mockDb
+    
+    ControllerAlmoxarifado -> mockDb : atualizarStatusRequisicao(reqId, 'Liberado')
+    activate mockDb
+    mockDb --> ControllerAlmoxarifado : Sucesso
+    deactivate mockDb
+    
+    ControllerAlmoxarifado --> PainelAlmoxarifado : Atualiza fila de requisições
+    PainelAlmoxarifado --> Almoxarife : Mostra mensagem de entrega efetuada
+else Estoque Insuficiente
+    ControllerAlmoxarifado --> PainelAlmoxarifado : Exibe aviso de itens em falta
+    PainelAlmoxarifado --> Almoxarife : Permite recusar ou liberar parcialmente
+end
+@enduml
+
+' ==============================================================================
+' DIAGRAMA 4: UC-04 - ENCERRAR OS E CONFIRMAR DEVOLUÇÃO
+' ==============================================================================
+@startuml UC-04: Encerrar OS e Devolução
+title UC-04: Encerrar OS e Devolução de Ferramental
+
+' Configurações visuais do diagrama (Mesmo padrão do Diagrama de Casos de Uso)
+skinparam shadowing false
+skinparam defaultFontName "Arial"
+
+skinparam actor {
+    BackgroundColor #E2E8F0
+    BorderColor #4A5568
+}
+
+skinparam participant {
+    BackgroundColor #F7FAFC
+    BorderColor #4A5568
+}
+
+skinparam boundary {
+    BackgroundColor #F7FAFC
+    BorderColor #4A5568
+}
+
+skinparam control {
+    BackgroundColor #F7FAFC
+    BorderColor #4A5568
+}
+
+skinparam database {
+    BackgroundColor #F7FAFC
+    BorderColor #4A5568
+}
+
+skinparam sequence {
+    ArrowColor #718096
+    LifeLineBorderColor #4A5568
+    LifeLineBackgroundColor #F7FAFC
+}
+
+actor Tecnico as "Técnico de Manutenção"
+actor Almoxarife as "Almoxarife (Estoque)"
+boundary TelaMinhasOS as "T_MinhasOS (HTML/CSS)"
+control ControllerMinhasOS as "T_MinhasOS (JS)"
+boundary PainelAlmoxarifado as "Alm_Painel (HTML/CSS)"
+control ControllerAlmoxarifado as "Alm_Painel (JS)"
+database mockDb as "mockDb.js\n(LocalStorage)"
+
+== Passo 1: Técnico Encerra o Reparo ==
+Tecnico -> TelaMinhasOS : Digita parecer técnico
+Tecnico -> TelaMinhasOS : Clica em "Encerrar Manutenção"
+TelaMinhasOS -> ControllerMinhasOS : finalizarOS(osId, parecer)
+ControllerMinhasOS -> mockDb : atualizarOS(osId, 'Aguardando Devolução', parecer)
+activate mockDb
+mockDb --> ControllerMinhasOS : Confirmado
+deactivate mockDb
+ControllerMinhasOS --> TelaMinhasOS : Exibe mensagem para devolver ferramentas
+TelaMinhasOS --> Tecnico : Atualiza status da OS
+
+== Passo 2: Devolução Física no Almoxarifado ==
+Tecnico -> Almoxarife : Entrega física das ferramentas
+Almoxarife -> PainelAlmoxarifado : Acessa aba "Controle de Cautelas"
+Almoxarife -> PainelAlmoxarifado : Clicar em "Confirmar Recebimento Físico" (cautelaId)
+PainelAlmoxarifado -> ControllerAlmoxarifado : processarRetorno(cautelaId, estadoFisico)
+
+alt Estado: Devolvido Corretamente
+    ControllerAlmoxarifado -> mockDb : incrementarEstoque(itens)
+    activate mockDb
+    mockDb --> ControllerAlmoxarifado : Estoque Atualizado
+    deactivate mockDb
+    
+    ControllerAlmoxarifado -> mockDb : atualizarStatusCautela(cautelaId, 'Devolvido')
+    activate mockDb
+    mockDb --> ControllerAlmoxarifado : Confirmado
+    deactivate mockDb
+    
+    ControllerAlmoxarifado -> mockDb : finalizarStatusOS(osId, 'Concluído')
+    activate mockDb
+    mockDb --> ControllerAlmoxarifado : Confirmado
+    deactivate mockDb
+    
+    ControllerAlmoxarifado -> mockDb : gerarLogHistoricoMaquina(maquinaTag, logDados)
+    activate mockDb
+    mockDb --> ControllerAlmoxarifado : Log Gravado
+    deactivate mockDb
+    
+    ControllerAlmoxarifado --> PainelAlmoxarifado : Atualiza aba de cautelas e conclui OS
+    PainelAlmoxarifado --> Almoxarife : Exibe sucesso e arquiva chamado
+else Estado: Ferramenta Danificada
+    ControllerAlmoxarifado -> mockDb : atualizarStatusCautela(cautelaId, 'Danificado')
+    activate mockDb
+    mockDb --> ControllerAlmoxarifado : Confirmado
+    deactivate mockDb
+    note over mockDb: Item não volta ao estoque ativo.\nRegistra log de perda física.
+    ControllerAlmoxarifado --> PainelAlmoxarifado : Registra ferramenta danificada e encerra OS
+end
+@enduml
