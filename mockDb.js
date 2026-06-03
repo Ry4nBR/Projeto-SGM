@@ -44,10 +44,43 @@ const mockDb = {
         // 3. ITENS ALMOXARIFADO (INVENTÁRIO)
         if (!localStorage.getItem(this.KEYS.ITENS_ALMOXARIFADO)) {
             const itensIniciais = [
-                { codigo: 'PE-0084', nome: 'Contator de Potência Siemens 24V', categoria: 'Peça de Reposição', qtd_atual: 2, qtd_minima: 5, localizacao: 'Prateleira A1 - Gaveta 3' },
-                { codigo: 'FE-0112', nome: 'Kit Padrão Mecânica Avançada #02', categoria: 'Kit Ferramentas', qtd_atual: 0, qtd_minima: 1, localizacao: 'Carrinho Móvel 02' },
-                { codigo: 'FE-0340', nome: 'Multímetro Digital Fluke 179', categoria: 'Ferramenta Avulsa', qtd_atual: 4, qtd_minima: 2, localizacao: 'Armário Principal B' },
-                { codigo: 'PE-0912', nome: 'Rolamento Blindado NSK 6204', categoria: 'Peça de Reposição', qtd_atual: 14, qtd_minima: 10, localizacao: 'Prateleira C3' }
+                { codigo: 'PE-0084', nome: 'Contator de Potência Siemens 24V', categoria: 'Peça de Reposição', qtd_atual: 2, qtd_minima: 5, localizacao: 'Prateleira A1 - Gaveta 3', nf_origem: 'NF-Estoque-Inicial' },
+                { codigo: 'FE-0112', nome: 'Kit Padrão Mecânica Avançada #02', categoria: 'Kit Ferramentas', qtd_atual: 0, qtd_minima: 1, localizacao: 'Carrinho Móvel 02', nf_origem: 'NF-Estoque-Inicial' },
+                { codigo: 'FE-0340', nome: 'Multímetro Digital Fluke 179', categoria: 'Ferramenta Avulsa', qtd_atual: 4, qtd_minima: 2, localizacao: 'Armário Principal B', nf_origem: 'NF-Estoque-Inicial' },
+                { codigo: 'PE-0912', nome: 'Rolamento Blindado NSK 6204', categoria: 'Peça de Reposição', qtd_atual: 14, qtd_minima: 10, localizacao: 'Prateleira C3', nf_origem: 'NF-Estoque-Inicial' },
+                
+                // Ferramentas industriais sugeridas
+                { codigo: 'FE-0001', nome: 'Chave combinada', categoria: 'Ferramenta Avulsa', qtd_atual: 12, qtd_minima: 4, localizacao: 'Armário de Ferramentas A', nf_origem: 'NF-Estoque-Inicial' },
+                { codigo: 'FE-0002', nome: 'Chave inglesa', categoria: 'Ferramenta Avulsa', qtd_atual: 8, qtd_minima: 2, localizacao: 'Armário de Ferramentas A', nf_origem: 'NF-Estoque-Inicial' },
+                { codigo: 'FE-0003', nome: 'Chave Allen', categoria: 'Ferramenta Avulsa', qtd_atual: 15, qtd_minima: 5, localizacao: 'Painel Geral A2', nf_origem: 'NF-Estoque-Inicial' },
+                { codigo: 'FE-0004', nome: 'Alicate universal', categoria: 'Ferramenta Avulsa', qtd_atual: 10, qtd_minima: 3, localizacao: 'Painel Geral A2', nf_origem: 'NF-Estoque-Inicial' },
+                { codigo: 'FE-0005', nome: 'Alicate de corte', categoria: 'Ferramenta Avulsa', qtd_atual: 10, qtd_minima: 3, localizacao: 'Painel Geral A2', nf_origem: 'NF-Estoque-Inicial' },
+                { codigo: 'FE-0006', nome: 'Multímetro', categoria: 'Ferramenta Avulsa', qtd_atual: 5, qtd_minima: 2, localizacao: 'Armário Elétrica B1', nf_origem: 'NF-Estoque-Inicial' },
+                { codigo: 'FE-0007', nome: 'Furadeira', categoria: 'Ferramenta Avulsa', qtd_atual: 3, qtd_minima: 1, localizacao: 'Prateleira D1', nf_origem: 'NF-Estoque-Inicial' },
+                { codigo: 'FE-0008', nome: 'Parafusadeira', categoria: 'Ferramenta Avulsa', qtd_atual: 4, qtd_minima: 1, localizacao: 'Prateleira D1', nf_origem: 'NF-Estoque-Inicial' },
+                { codigo: 'FE-0009', nome: 'Esmerilhadeira', categoria: 'Ferramenta Avulsa', qtd_atual: 3, qtd_minima: 1, localizacao: 'Prateleira D2', nf_origem: 'NF-Estoque-Inicial' },
+                { codigo: 'FE-0010', nome: 'Martelo', categoria: 'Ferramenta Avulsa', qtd_atual: 8, qtd_minima: 2, localizacao: 'Armário Geral C', nf_origem: 'NF-Estoque-Inicial' },
+                { codigo: 'FE-0011', nome: 'Trena', categoria: 'Ferramenta Avulsa', qtd_atual: 20, qtd_minima: 5, localizacao: 'Gaveteiro A1', nf_origem: 'NF-Estoque-Inicial' },
+                { codigo: 'FE-0012', nome: 'Paquímetro', categoria: 'Ferramenta Avulsa', qtd_atual: 6, qtd_minima: 2, localizacao: 'Gaveteiro A1', nf_origem: 'NF-Estoque-Inicial' },
+                { codigo: 'FE-0013', nome: 'Torquímetro', categoria: 'Ferramenta Avulsa', qtd_atual: 4, qtd_minima: 1, localizacao: 'Gaveteiro A2', nf_origem: 'NF-Estoque-Inicial' },
+
+                // Peças industriais sugeridas
+                { codigo: 'PE-0001', nome: 'Rolamentos', categoria: 'Peça de Reposição', qtd_atual: 25, qtd_minima: 10, localizacao: 'Gaveta C1', nf_origem: 'NF-Estoque-Inicial' },
+                { codigo: 'PE-0002', nome: 'Correias', categoria: 'Peça de Reposição', qtd_atual: 15, qtd_minima: 5, localizacao: 'Prateleira B3', nf_origem: 'NF-Estoque-Inicial' },
+                { codigo: 'PE-0003', nome: 'Polias', categoria: 'Peça de Reposição', qtd_atual: 10, qtd_minima: 3, localizacao: 'Prateleira B4', nf_origem: 'NF-Estoque-Inicial' },
+                { codigo: 'PE-0004', nome: 'Parafusos', categoria: 'Peça de Reposição', qtd_atual: 100, qtd_minima: 20, localizacao: 'Caixa Organizadora 1', nf_origem: 'NF-Estoque-Inicial' },
+                { codigo: 'PE-0005', nome: 'Porcas', categoria: 'Peça de Reposição', qtd_atual: 100, qtd_minima: 20, localizacao: 'Caixa Organizadora 2', nf_origem: 'NF-Estoque-Inicial' },
+                { codigo: 'PE-0006', nome: 'Arruelas', categoria: 'Peça de Reposição', qtd_atual: 150, qtd_minima: 30, localizacao: 'Caixa Organizadora 3', nf_origem: 'NF-Estoque-Inicial' },
+                { codigo: 'PE-0007', nome: 'Sensores indutivos', categoria: 'Peça de Reposição', qtd_atual: 8, qtd_minima: 3, localizacao: 'Armário Sensores S1', nf_origem: 'NF-Estoque-Inicial' },
+                { codigo: 'PE-0008', nome: 'Sensores fotoelétricos', categoria: 'Peça de Reposição', qtd_atual: 6, qtd_minima: 2, localizacao: 'Armário Sensores S2', nf_origem: 'NF-Estoque-Inicial' },
+                { codigo: 'PE-0009', nome: 'Contatores', categoria: 'Peça de Reposição', qtd_atual: 12, qtd_minima: 4, localizacao: 'Prateleira Elétrica E1', nf_origem: 'NF-Estoque-Inicial' },
+                { codigo: 'PE-0010', nome: 'Relés', categoria: 'Peça de Reposição', qtd_atual: 20, qtd_minima: 5, localizacao: 'Prateleira Elétrica E2', nf_origem: 'NF-Estoque-Inicial' },
+                { codigo: 'PE-0011', nome: 'Fusíveis', categoria: 'Peça de Reposição', qtd_atual: 50, qtd_minima: 15, localizacao: 'Gaveta Elétrica G1', nf_origem: 'NF-Estoque-Inicial' },
+                { codigo: 'PE-0012', nome: 'Cabos elétricos', categoria: 'Peça de Reposição', qtd_atual: 200, qtd_minima: 50, localizacao: 'Suporte Carretel C1', nf_origem: 'NF-Estoque-Inicial' },
+                { codigo: 'PE-0013', nome: 'Mangueiras pneumáticas', categoria: 'Peça de Reposição', qtd_atual: 100, qtd_minima: 20, localizacao: 'Suporte Carretel C2', nf_origem: 'NF-Estoque-Inicial' },
+                { codigo: 'PE-0014', nome: 'Válvulas', categoria: 'Peça de Reposição', qtd_atual: 10, qtd_minima: 3, localizacao: 'Gaveta Hidráulica H1', nf_origem: 'NF-Estoque-Inicial' },
+                { codigo: 'PE-0015', nome: 'Motores elétricos', categoria: 'Peça de Reposição', qtd_atual: 2, qtd_minima: 1, localizacao: 'Palete Chão D1', nf_origem: 'NF-Estoque-Inicial' },
+                { codigo: 'PE-0016', nome: 'Acoplamentos', categoria: 'Peça de Reposição', qtd_atual: 6, qtd_minima: 2, localizacao: 'Prateleira C2', nf_origem: 'NF-Estoque-Inicial' }
             ];
             localStorage.setItem(this.KEYS.ITENS_ALMOXARIFADO, JSON.stringify(itensIniciais));
         }
@@ -74,6 +107,7 @@ const mockDb = {
                     solicitante_id: 3, // Wanderillo (Operador)
                     tecnico_id: 2, // Carlos Silva (Técnico)
                     status_os: 'Em Andamento',
+                    criticidade: 'Alta',
                     data_abertura: '2026-05-27T09:15:00',
                     data_inicio_manutencao: '2026-05-27T09:30:00',
                     data_fechamento: null,
@@ -88,6 +122,7 @@ const mockDb = {
                     solicitante_id: 3,
                     tecnico_id: null,
                     status_os: 'Aberta',
+                    criticidade: 'Alta',
                     data_abertura: '2026-06-02T14:00:00',
                     data_inicio_manutencao: null,
                     data_fechamento: null,
@@ -102,6 +137,7 @@ const mockDb = {
                     solicitante_id: 3,
                     tecnico_id: null,
                     status_os: 'Aberta',
+                    criticidade: 'Média',
                     data_abertura: '2026-06-02T14:20:00',
                     data_inicio_manutencao: null,
                     data_fechamento: null,

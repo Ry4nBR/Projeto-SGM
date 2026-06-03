@@ -65,6 +65,18 @@
             </header>
 
             <div class="execution-grid">
+                <!-- Coluna de OSs Atribuídas -->
+                <div class="os-list-column">
+                    <div class="card-base">
+                        <div class="card-header-inside">
+                            <h3>OSs Atribuídas</h3>
+                        </div>
+                        <ul id="lista-os-atribuidas" class="os-sidebar-list">
+                            <li class="empty-list-notice">Carregando...</li>
+                        </ul>
+                    </div>
+                </div>
+
                 <div class="details-column">
                     <div class="card-base">
                         <div class="card-header-inside">
@@ -97,6 +109,38 @@
                                 <label>Abertura do Chamado</label>
                                 <p>27/05/2026 às 09:15</p>
                             </div>
+                            <div class="info-item">
+                                <label>Criticidade do Chamado</label>
+                                <p id="os-detail-criticidade"><span class="badge-crit criticidade-alta" style="padding:4px 8px; border-radius:4px; font-weight:700;">Alta</span></p>
+                            </div>
+                            <div class="info-item full-width">
+                                <label>Observações / Diagnóstico Técnico Final</label>
+                                <p id="os-detail-observacoes" class="description-text" style="font-style: italic; background-color: #FAFAFA; border: 1px dashed #E0E0E0;">Aguardando encerramento técnico.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Novo card: Histórico da Máquina -->
+                    <div class="card-base" style="margin-top: 20px;">
+                        <div class="card-header-inside">
+                            <h3>Histórico de Intervenções no Ativo</h3>
+                        </div>
+                        <div class="table-container">
+                            <table id="table-historico-maquina" style="font-size: 13px; width: 100%; min-width: 0;">
+                                <thead>
+                                    <tr>
+                                        <th style="padding: 10px; font-size: 11px;">Data</th>
+                                        <th style="padding: 10px; font-size: 11px;">Falha</th>
+                                        <th style="padding: 10px; font-size: 11px;">Técnico</th>
+                                        <th style="padding: 10px; font-size: 11px;">Relato</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td colspan="4" style="text-align: center; color: var(--neutral-medium); font-style: italic; padding: 20px;">Carregando histórico...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
@@ -122,9 +166,18 @@
                             </div>
 
                             <div id="tab-kit" class="tab-content">
-                                <p class="tab-instruction">Requisita o kit de ferramentas completo configurado pela
-                                    engenharia para esta máquina.</p>
-                                <button id="btn-solicitar-kit" class="btn-outlined">
+                                <p class="tab-instruction">Selecione e requisite um kit de ferramentas padronizado:</p>
+                                <div class="action-form-group">
+                                    <label for="select-solicitar-kit">Kit Padronizado</label>
+                                    <select id="select-solicitar-kit">
+                                        <option value="" disabled selected>Selecione um kit...</option>
+                                    </select>
+                                </div>
+                                <div id="kit-detail-box" class="kit-detail-box hidden" style="margin-top: 12px; background: #F5F5F5; padding: 12px; border-radius: 8px; border: 1px solid #E0E0E0; font-size: 13px; margin-bottom: 12px; text-align: left;">
+                                    <p style="margin-bottom: 6px;"><strong>Descrição:</strong> <span id="kit-desc-text"></span></p>
+                                    <p><strong>Itens Inclusos:</strong> <span id="kit-items-text"></span></p>
+                                </div>
+                                <button id="btn-solicitar-kit" class="btn-outlined" disabled>
                                     <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor"
                                         stroke-width="2">
                                         <path
@@ -136,15 +189,20 @@
                             </div>
 
                             <div id="tab-avulso" class="tab-content hidden">
-                                <p class="tab-instruction">Adicione componentes específicos ou ferramentas sob demanda
-                                    para o reparo.</p>
-
+                                <p class="tab-instruction">Selecione peças e ferramentas do almoxarifado sob demanda:</p>
+                                <div class="action-form-group">
+                                    <label for="select-item-almoxarifado">Item do Almoxarifado</label>
+                                    <select id="select-item-almoxarifado">
+                                        <option value="" disabled selected>Selecione um item...</option>
+                                    </select>
+                                </div>
+                                <div id="item-stock-box" class="item-stock-box hidden" style="font-size:12px; margin-bottom: 10px; color:#555; text-align: left;">
+                                    <span>Quantidade Disponível: <strong id="item-qtd-disponivel">0</strong> un</span>
+                                </div>
                                 <div class="avulso-input-row">
-                                    <input type="text" id="input-item-nome"
-                                        placeholder="Ex: Contator K1 / Chave Allen 5mm">
-                                    <input type="number" id="input-item-qtd" min="1" value="1" placeholder="Qtd">
+                                    <input type="number" id="input-item-qtd" min="1" value="1" placeholder="Qtd" style="width: 70px;">
                                     <button type="button" id="btn-add-item-lista" class="btn-add-item"
-                                        title="Adicionar item">+</button>
+                                        title="Adicionar item" disabled>+</button>
                                 </div>
 
                                 <div class="items-list-wrapper">

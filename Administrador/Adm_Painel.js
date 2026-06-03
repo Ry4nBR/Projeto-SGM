@@ -18,7 +18,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const avatarUser = document.querySelector('.sidebar-footer .user-avatar');
         if (spanUser) spanUser.textContent = user.nome;
         if (avatarUser && user.nome) {
-            avatarUser.textContent = user.nome.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+            // Se o usuário tiver foto Base64, exibir como imagem
+            if (user.foto) {
+                avatarUser.innerHTML = '';
+                avatarUser.style.backgroundImage = `url(${user.foto})`;
+                avatarUser.style.backgroundSize = 'cover';
+                avatarUser.style.backgroundPosition = 'center';
+            } else {
+                avatarUser.textContent = user.nome.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+            }
         }
     }
 
@@ -43,8 +51,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         document.querySelector('.metrics-cards-grid .card-metric:nth-child(2) .metric-value').innerHTML = `${mttrMinutos}<span class="metric-unit">min</span>`;
 
-        // Metric 3: Máquinas Paradas Agora
-        const maquinasParadas = equipamentos.filter(e => e.status_equipamento === 'Parado').length;
+        // Metric 3: Máquinas Paradas Agora (Em Manutenção ou Parado)
+        const maquinasParadas = equipamentos.filter(e => e.status_equipamento === 'Parado' || e.status_equipamento === 'Em Manutenção').length;
         document.querySelector('.metrics-cards-grid .card-metric:nth-child(3) .metric-value').textContent = String(maquinasParadas).padStart(2, '0');
     }
 
@@ -68,17 +76,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Preencher setores dinâmicos
         const equipamentos = mockDb.getEquipamentos();
-        const setoresUnicos = [...new Set(equipamentos.map(e => e.setor))];
+        const setoresUnicos = [...new Set(equipamentos.map(e => e.setor.split(' - ')[0]))];
         
         filterSetor.innerHTML = '<option value="todos">Todos os Setores</option>';
         setoresUnicos.forEach(s => {
             const opt = document.createElement('option');
-            // Remove linhas específicas se necessário, pega apenas a palavra principal
-            const setorNome = s.split(' - ')[0];
-            opt.value = setorNome;
-            opt.textContent = setorNome;
+            opt.value = s;
+            opt.textContent = s;
             filterSetor.appendChild(opt);
         });
+    }
+
+    // Formata data ISO para pt-BR legível
+    function formatarData(dataISO) {
+        if (!dataISO) return '—';
+        try {
+            return new Date(dataISO).toLocaleString('pt-BR', {
+                day: '2-digit', month: '2-digit', year: 'numeric',
+                hour: '2-digit', minute: '2-digit'
+            });
+        } catch (e) {
+            return '—';
+        }
     }
 
     // 4. Renderizar a Tabela Mestre
@@ -93,7 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (ordens.length === 0) {
             tabelaCorpo.innerHTML = `
                 <tr>
-                    <td colspan="7" style="text-align: center; color: var(--neutral-medium); font-style: italic; padding: 32px;">
+                    <td colspan="10" style="text-align: center; color: var(--neutral-medium); font-style: italic; padding: 32px;">
                         Nenhuma ordem de serviço registrada no SGM.
                     </td>
                 </tr>`;
@@ -103,16 +122,21 @@ document.addEventListener('DOMContentLoaded', () => {
         ordens.forEach(os => {
             const eq = equipamentos.find(e => e.tag === os.equipamento_tag);
             const nomeMaquina = eq ? eq.nome : 'Máquina não cadastrada';
-            const setorCompleto = eq ? eq.setor : os.setor;
+            const setorCompleto = eq ? eq.setor : (os.setor || 'Não definido');
             const setorPrincipal = setorCompleto.split(' - ')[0]; // ex: "Montagem"
 
             const tech = os.tecnico_id ? usuarios.find(u => u.id === os.tecnico_id) : null;
             const nomeTecnico = tech ? tech.nome : 'Não Atribuído';
 
-            // Criticidade Badge
+            // Solicitante
+            const solicitante = os.solicitante_id ? usuarios.find(u => u.id === os.solicitante_id) : null;
+            const nomeSolicitante = solicitante ? solicitante.nome : 'Não identificado';
+
+            // Criticidade Badge (com proteção contra undefined)
+            const criticidade = os.criticidade || 'Média';
             let classeCrit = 'criticidade-media';
-            if (os.criticidade === 'Alta' || os.criticidade.toUpperCase().includes('ALTA')) classeCrit = 'criticidade-alta';
-            if (os.criticidade === 'Baixa') classeCrit = 'criticidade-baixa';
+            if (criticidade === 'Alta' || criticidade.toUpperCase().includes('ALTA')) classeCrit = 'criticidade-alta';
+            if (criticidade === 'Baixa') classeCrit = 'criticidade-baixa';
             
             // Status Badge
             let badgeStatusClass = 'status-manutencao';
@@ -138,19 +162,26 @@ document.addEventListener('DOMContentLoaded', () => {
                 optionsReassign += `<option value="${t.id}" ${tech && tech.id === t.id ? 'selected' : ''}>${t.nome}</option>`;
             });
 
+            // Observações truncadas
+            const obsCompleta = os.descricao_problema || '';
+            const obsTruncada = obsCompleta.length > 60 ? obsCompleta.substring(0, 60) + '...' : obsCompleta;
+
             const tr = document.createElement('tr');
             tr.setAttribute('data-tecnico', nomeTecnico);
             tr.setAttribute('data-setor', setorPrincipal);
-            tr.setAttribute('data-criticidade', os.criticidade);
-            tr.setAttribute('data-status', os.status_os === 'Aberta' ? 'Pendente' : os.status_os);
+            tr.setAttribute('data-criticidade', criticidade);
+            tr.setAttribute('data-status', os.status_os);
 
             tr.innerHTML = `
                 <td class="col-id">#${os.codigo_os}</td>
                 <td><strong>${eq ? eq.nome : 'Equipamento'} ${os.equipamento_tag}</strong></td>
+                <td>${nomeSolicitante}</td>
                 <td>${setorPrincipal}</td>
-                <td><span class="badge-crit ${classeCrit}">${os.criticidade}</span></td>
+                <td><span class="badge-crit ${classeCrit}">${criticidade}</span></td>
                 <td><span class="badge-status ${badgeStatusClass}">${statusExibido}</span></td>
                 <td class="td-tech-name ${tech ? '' : 'label-unassigned'}">${nomeTecnico}</td>
+                <td class="col-data">${formatarData(os.data_abertura)}</td>
+                <td class="col-obs" title="${obsCompleta}">${obsTruncada || '<em style="color:var(--neutral-medium)">—</em>'}</td>
                 <td>
                     <select class="select-table-reassign ${tech ? '' : 'highlighted-select'}" data-os-id="${os.id}">
                         ${optionsReassign}
@@ -238,20 +269,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const critLinha = linha.getAttribute('data-criticidade');
             const statusLinha = linha.getAttribute('data-status');
 
-            // Mapeamentos de status entre filtros e atributos
-            // statusLinha pode ser 'Aberta', 'Em Andamento', 'Aguardando Peças', 'Aguardando Devolução de Ferramentas', 'Concluído'
-            // valStatus pode ser 'todos', 'Em Manutenção', 'Aguardando Peças', 'Aguardando Devolução do Kit'
-            let matchStatus = false;
-            if (valStatus === 'todos') {
-                matchStatus = true;
-            } else if (valStatus === 'Em Manutenção' && statusLinha === 'Em Andamento') {
-                matchStatus = true;
-            } else if (valStatus === 'Aguardando Peças' && statusLinha === 'Aguardando Peças') {
-                matchStatus = true;
-            } else if (valStatus === 'Aguardando Devolução do Kit' && statusLinha === 'Aguardando Devolução de Ferramentas') {
-                matchStatus = true;
-            }
-
+            const matchStatus = (valStatus === 'todos' || statusLinha === valStatus);
             const matchTecnico = (valTecnico === 'todos' || techLinha === valTecnico);
             const matchSetor = (valSetor === 'todos' || setorLinha === valSetor);
             const matchCriticidade = (valCriticidade === 'todos' || critLinha === valCriticidade);

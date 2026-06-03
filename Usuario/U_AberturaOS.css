@@ -294,6 +294,17 @@ textarea {
     box-shadow: var(--shadow-md);
 }
 
+.card-low:has(input:checked) {
+    border-color: #1976D2;
+    background-color: #E3F2FD;
+}
+.card-low:has(input:checked) .status-icon {
+    border-color: #1976D2;
+}
+.card-low:has(input:checked) .status-icon::after {
+    background-color: #1976D2;
+}
+
 .card-restriction:has(input:checked) {
     border-color: var(--warning);
     background-color: var(--warning-light);
@@ -355,6 +366,12 @@ textarea {
     background-color: var(--warning-light);
     color: #A07800;
     border: 1.5px solid var(--warning);
+}
+
+.status-baixa {
+    background-color: #E3F2FD;
+    color: #1976D2;
+    border: 1.5px solid #1976D2;
 }
 
 /* Botão Principal */

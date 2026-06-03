@@ -43,6 +43,9 @@ document.addEventListener('DOMContentLoaded', () => {
         } else if (statusSelecionado === 'restricao') {
             panelCriticidade.className = 'criticidade-box status-media';
             valueCriticidade.textContent = 'MÉDIA (Alerta Operacional)';
+        } else if (statusSelecionado === 'baixa') {
+            panelCriticidade.className = 'criticidade-box status-baixa';
+            valueCriticidade.textContent = 'BAIXA (Não Urgente)';
         } else {
             panelCriticidade.className = 'criticidade-box status-empty';
             valueCriticidade.textContent = 'Aguardando Seleção';
@@ -61,8 +64,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const maquinaTag = selectMaquina.value;
         const condicao = document.querySelector('input[name="status_maquina"]:checked').value;
         const criticidadeTexto = valueCriticidade.textContent;
-        // Pega 'Alta' ou 'Média'
-        const criticidadeCalculada = criticidadeTexto.includes('ALTA') ? 'Alta' : 'Média';
+        // Pega 'Alta', 'Média' ou 'Baixa'
+        const criticidadeCalculada = criticidadeTexto.includes('ALTA') ? 'Alta' : (criticidadeTexto.includes('MÉDIA') ? 'Média' : 'Baixa');
 
         const dadosFormulario = {
             equipamento_tag: maquinaTag,

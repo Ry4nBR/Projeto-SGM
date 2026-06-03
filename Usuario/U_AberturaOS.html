@@ -103,6 +103,15 @@
                         <p class="card-subtitle">Como este problema afeta a linha de produção agora?</p>
 
                         <div class="status-selector-grid">
+                            <label class="status-card card-low">
+                                <input type="radio" name="status_maquina" value="baixa" required>
+                                <div class="status-card-content">
+                                    <div class="status-icon info"></div>
+                                    <h4>Baixa Prioridade</h4>
+                                    <p>Solicitações não urgentes, como: manutenção preventiva, pequenos reparos, melhorias.</p>
+                                </div>
+                            </label>
+
                             <label class="status-card card-restriction">
                                 <input type="radio" name="status_maquina" value="restricao" required>
                                 <div class="status-card-content">

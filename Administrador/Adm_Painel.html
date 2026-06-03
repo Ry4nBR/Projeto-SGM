@@ -134,9 +134,11 @@
                         <label for="filter-status">Status da Ordem</label>
                         <select id="filter-status">
                             <option value="todos">Todos os Status</option>
-                            <option value="Em Manutenção">Em Manutenção</option>
+                            <option value="Aberta">Aberta (Aguardando Técnico)</option>
+                            <option value="Em Andamento">Em Manutenção</option>
                             <option value="Aguardando Peças">Aguardando Peças</option>
-                            <option value="Aguardando Devolução do Kit">Aguardando Devolução do Kit</option>
+                            <option value="Aguardando Devolução de Ferramentas">Devolvendo Kit</option>
+                            <option value="Concluído">Concluído</option>
                         </select>
                     </div>
                 </div>
@@ -149,63 +151,18 @@
                             <tr>
                                 <th>Código</th>
                                 <th>Equipamento</th>
+                                <th>Solicitante</th>
                                 <th>Setor</th>
                                 <th>Criticidade</th>
                                 <th>Status</th>
                                 <th>Técnico Atual</th>
+                                <th>Data Abertura</th>
+                                <th>Observações</th>
                                 <th>Intervenção (Reatribuir)</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr data-tecnico="Carlos Silva" data-setor="Montagem" data-criticidade="Alta"
-                                data-status="Em Manutenção">
-                                <td class="col-id">#OS-102</td>
-                                <td><strong>Prensa Hidráulica MQ-02</strong></td>
-                                <td>Montagem</td>
-                                <td><span class="badge-crit criticidade-alta">Alta</span></td>
-                                <td><span class="badge-status status-manutencao">Em Manutenção</span></td>
-                                <td class="td-tech-name">Carlos Silva</td>
-                                <td>
-                                    <select class="select-table-reassign" onchange="reatribuirTecnico(this, '#OS-102')">
-                                        <option value="Carlos Silva" selected>Carlos Silva</option>
-                                        <option value="Fernando Souza">Fernando Souza</option>
-                                        <option value="Não Atribuído">Remover Técnico</option>
-                                    </select>
-                                </td>
-                            </tr>
-                            <tr data-tecnico="Fernando Souza" data-setor="Injeção" data-criticidade="Média"
-                                data-status="Aguardando Peças">
-                                <td class="col-id">#OS-104</td>
-                                <td>Injetora de Plástico MQ-09</td>
-                                <td>Injeção</td>
-                                <td><span class="badge-crit criticidade-media">Média</span></td>
-                                <td><span class="badge-status status-pecas">Aguardando Peças</span></td>
-                                <td class="td-tech-name">Fernando Souza</td>
-                                <td>
-                                    <select class="select-table-reassign" onchange="reatribuirTecnico(this, '#OS-104')">
-                                        <option value="Carlos Silva">Carlos Silva</option>
-                                        <option value="Fernando Souza" selected>Fernando Souza</option>
-                                        <option value="Não Atribuído">Remover Técnico</option>
-                                    </select>
-                                </td>
-                            </tr>
-                            <tr data-tecnico="Não Atribuído" data-setor="Estamparia" data-criticidade="Alta"
-                                data-status="Em Manutenção">
-                                <td class="col-id">#OS-108</td>
-                                <td>Torno Mecânico MQ-11</td>
-                                <td>Estamparia</td>
-                                <td><span class="badge-crit criticidade-alta">Alta</span></td>
-                                <td><span class="badge-status status-manutencao">Em Manutenção</span></td>
-                                <td class="td-tech-name label-unassigned">Não Atribuído</td>
-                                <td>
-                                    <select class="select-table-reassign highlighted-select"
-                                        onchange="reatribuirTecnico(this, '#OS-108')">
-                                        <option value="Não Atribuído" selected>Escolher Técnico...</option>
-                                        <option value="Carlos Silva">Carlos Silva</option>
-                                        <option value="Fernando Souza">Fernando Souza</option>
-                                    </select>
-                                </td>
-                            </tr>
+                            <!-- Renderizado dinamicamente via Adm_Painel.js -->
                         </tbody>
                     </table>
                 </div>

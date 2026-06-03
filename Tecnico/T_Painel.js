@@ -78,6 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const tr = document.createElement('tr');
             tr.className = classeLinha;
+            tr.style.cursor = 'pointer';
             tr.setAttribute('data-os-id', os.codigo_os);
 
             tr.innerHTML = `
@@ -97,31 +98,108 @@ document.addEventListener('DOMContentLoaded', () => {
                 </td>
             `;
 
+            // Clique na linha para visualizar detalhes completos
+            tr.addEventListener('click', (e) => {
+                if (e.target.closest('.btn-assumir')) return;
+                abrirModalDetalhes(os);
+            });
+
             tabelaCorpo.appendChild(tr);
         });
 
-        // Re-associar ouvintes nos botões gerados
+        // Re-associar ouvintes nos botões assumir da tabela
         const botoes = tabelaCorpo.querySelectorAll('.btn-assumir');
         botoes.forEach(btn => {
             btn.addEventListener('click', (e) => {
+                e.stopPropagation();
                 const idOS = e.target.getAttribute('data-id');
                 const tr = e.target.closest('tr');
                 const codigoOS = tr.getAttribute('data-os-id');
-
-                if (confirm(`Deseja assumir o diagnóstico e execução da OS #${codigoOS} agora?`)) {
-                    // Atualiza no banco
-                    mockDb.updateOrdemServico(idOS, {
-                        tecnico_id: user ? user.id : 2, // Carlos Silva fallback
-                        status_os: 'Em Andamento',
-                        data_inicio_manutencao: new Date().toISOString()
-                    });
-
-                    // Feedback visual e redirecionamento para o painel de execução
-                    alert(`OS #${codigoOS} vinculada com sucesso! Você será redirecionado para a tela de execução.`);
-                    window.location.href = `T_MinhasOS.html?os=${codigoOS}`;
-                }
+                assumirOSLogica(idOS, codigoOS);
             });
         });
+    }
+
+    // Modal de Detalhes da OS
+    const modalDetails = document.getElementById('modal-detalhes-os');
+    const btnFecharModal = document.getElementById('btn-fechar-modal-detalhes');
+    const btnAssumirModal = document.getElementById('btn-assumir-modal');
+
+    if (btnFecharModal) {
+        btnFecharModal.addEventListener('click', () => modalDetails.classList.add('hidden'));
+    }
+    if (modalDetails) {
+        modalDetails.addEventListener('click', (e) => {
+            if (e.target === modalDetails) modalDetails.classList.add('hidden');
+        });
+    }
+
+    function abrirModalDetalhes(os) {
+        if (!modalDetails) return;
+        const eq = equipamentos.find(e => e.tag === os.equipamento_tag);
+        const solicitante = usuarios.find(u => u.id === os.solicitante_id);
+        const solicitanteNome = solicitante ? solicitante.nome : 'Desconhecido';
+
+        document.getElementById('modal-os-titulo').textContent = `Ordem de Serviço #${os.codigo_os}`;
+        document.getElementById('modal-os-maquina').textContent = eq ? `${eq.tag} - ${eq.nome}` : os.equipamento_tag;
+        document.getElementById('modal-os-setor').textContent = eq ? eq.setor : os.setor || 'Chão de Fábrica';
+        document.getElementById('modal-os-falha').textContent = os.tipo_falha;
+        
+        let critText = os.criticidade || 'Alta';
+        let critClass = 'criticidade-alta';
+        if (critText === 'Média') critClass = 'criticidade-media';
+        if (critText === 'Baixa') critClass = 'status-baixa';
+        document.getElementById('modal-os-criticidade').innerHTML = `<span class="badge-crit ${critClass}">${critText}</span>`;
+
+        document.getElementById('modal-os-desc').textContent = os.descricao_problema;
+        document.getElementById('modal-os-solicitante').textContent = solicitanteNome;
+        document.getElementById('modal-os-data').textContent = new Date(os.data_abertura).toLocaleString('pt-BR');
+
+        // Histórico
+        const historicoDiv = document.getElementById('modal-os-historico');
+        historicoDiv.innerHTML = '';
+        const historicos = mockDb.getHistoricoMaquinas();
+        const logsMaquina = historicos[os.equipamento_tag];
+        
+        if (!logsMaquina || !logsMaquina.logs || logsMaquina.logs.length === 0) {
+            historicoDiv.innerHTML = '<p style="color:var(--neutral-medium); font-style:italic; font-size:12px; margin:0;">Nenhuma intervenção anterior para esta máquina.</p>';
+        } else {
+            logsMaquina.logs.forEach(l => {
+                const logItem = document.createElement('div');
+                logItem.style.marginBottom = '8px';
+                logItem.style.borderBottom = '1px solid #EEE';
+                logItem.style.paddingBottom = '6px';
+                logItem.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; font-weight:600; font-size:11px; color:#555;">
+                        <span>${l.data.split(' - ')[0]} (${l.tipo})</span>
+                        <span>Téc. ${l.tecnico}</span>
+                    </div>
+                    <p style="margin:2px 0 0 0; font-size:12px; line-height:1.3;">${l.relato}</p>
+                `;
+                historicoDiv.appendChild(logItem);
+            });
+        }
+
+        // Ação do Botão no Modal
+        btnAssumirModal.onclick = () => {
+            assumirOSLogica(os.id, os.codigo_os);
+        };
+
+        modalDetails.classList.remove('hidden');
+    }
+
+    function assumirOSLogica(idOS, codigoOS) {
+        if (confirm(`Deseja assumir o diagnóstico e execução da OS #${codigoOS} agora?`)) {
+            mockDb.updateOrdemServico(idOS, {
+                tecnico_id: user ? user.id : 2, // Carlos Silva fallback
+                status_os: 'Em Andamento',
+                data_inicio_manutencao: new Date().toISOString()
+            });
+
+            alert(`OS #${codigoOS} vinculada com sucesso! Você será redirecionado para a tela de execução.`);
+            window.location.href = `T_MinhasOS.html?os=${codigoOS}`;
+        }
+    }
     }
 
     // Inicialização da fila

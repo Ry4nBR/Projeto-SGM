@@ -72,31 +72,29 @@
                             <table>
                                 <thead>
                                     <tr>
+                                        <th>Número da OS</th>
+                                        <th>Técnico Responsável</th>
+                                        <th>Kit / Itens Designados</th>
                                         <th>Tipo</th>
-                                        <th>Código OS Vinculada</th>
-                                        <th>Técnico Solicitante</th>
-                                        <th>Ferramenta / Peça Solicitada</th>
                                         <th>Ação Física</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr id="row-saida-1">
-                                        <td><span class="badge-type type-kit">Kit Completo</span></td>
+                                    <tr id="row-saida-1" style="cursor: pointer;">
                                         <td class="col-id">#OS-2026-102</td>
                                         <td><strong>Carlos Silva</strong></td>
                                         <td><span class="item-name">Kit Padrão Mecânica Avançada #02</span></td>
+                                        <td><span class="badge-type type-kit">Kit Completo</span></td>
                                         <td><button class="btn-action btn-dispensar"
-                                                onclick="dispensarItem('row-saida-1', 'Kit Padrão Mecânica Avançada #02')">Baixar
-                                                e Entregar</button></td>
+                                                onclick="event.stopPropagation(); dispensarItem('row-saida-1', 'Kit Padrão Mecânica Avançada #02')">Confirmar Retirada Física</button></td>
                                     </tr>
-                                    <tr id="row-saida-2">
-                                        <td><span class="badge-type type-avulso">Item Avulso</span></td>
+                                    <tr id="row-saida-2" style="cursor: pointer;">
                                         <td class="col-id">#OS-2026-105</td>
                                         <td><strong>Carlos Silva</strong></td>
                                         <td><span class="item-name">Multímetro Digital Fluke 179</span></td>
+                                        <td><span class="badge-type type-avulso">Item Avulso</span></td>
                                         <td><button class="btn-action btn-dispensar"
-                                                onclick="dispensarItem('row-saida-2', 'Multímetro Digital Fluke 179')">Baixar
-                                                e Entregar</button></td>
+                                                onclick="event.stopPropagation(); dispensarItem('row-saida-2', 'Multímetro Digital Fluke 179')">Confirmar Retirada Física</button></td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -114,6 +112,8 @@
                                         <th>Código Retorno</th>
                                         <th>Técnico Devolvendo</th>
                                         <th>Material a Recolher</th>
+                                        <th>OS Vinculada</th>
+                                        <th>Data da Retirada</th>
                                         <th>Status do Ativo</th>
                                         <th>Ação de Recebimento</th>
                                     </tr>
@@ -123,8 +123,9 @@
                                         <td class="col-id">#RET-849</td>
                                         <td>Carlos Silva</td>
                                         <td>Kit Padrão Mecânica Avançada #02</td>
-                                        <td><span class="badge-status status-aguardando">Em campo com técnico</span>
-                                        </td>
+                                        <td>#OS-2026-102</td>
+                                        <td>27/05/2026 09:45</td>
+                                        <td><span class="badge-status status-aguardando">Em campo com técnico</span></td>
                                         <td><button class="btn-action btn-confirmar"
                                                 onclick="confirmarDevolucao('row-retorno-1', 'Kit Padrão Mecânica Avançada #02')">Confirmar
                                                 Recebimento Físico</button></td>
@@ -150,6 +151,7 @@
                                         <th>Qtd Atual</th>
                                         <th>Qtd Mínima</th>
                                         <th>Localização de Fábrica</th>
+                                        <th>NF de Origem</th>
                                         <th>Disponibilidade</th>
                                     </tr>
                                 </thead>
@@ -202,7 +204,7 @@
                             <div class="card-header-inside">
                                 <h3>Cadastro Unificado de Material</h3>
                             </div>
-                            <form id="form-cadastro-manual">
+                             <form id="form-cadastro-manual">
                                 <div class="form-group">
                                     <label for="txt-nome-item">Nome do Item/Peça</label>
                                     <input type="text" id="txt-nome-item" placeholder="Ex: Sensor Indutivo M12"
@@ -217,6 +219,10 @@
                                         <label for="txt-qtd-minima">Estoque Mínimo de Alerta</label>
                                         <input type="number" id="txt-qtd-minima" min="1" placeholder="2" required>
                                     </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="txt-nf-origem">NF de Origem</label>
+                                    <input type="text" id="txt-nf-origem" placeholder="Ex: NF-2026-9051" required>
                                 </div>
                                 <button type="submit" class="btn-primary-action">Dar Entrada no Saldo</button>
                             </form>
@@ -246,6 +252,49 @@
 
             </section>
         </main>
+    </div>
+
+    <!-- Modal de Detalhes da Solicitação -->
+    <div id="modal-detalhes-solicitacao" class="modal-overlay hidden">
+        <div class="modal-card" style="max-width: 550px;">
+            <div class="modal-header">
+                <h3 style="font-size: 20px; font-weight: 700; margin-bottom: 6px;">Detalhamento da Solicitação</h3>
+                <p style="font-size: 13px; color: var(--neutral-medium); margin-bottom: 20px;">Informações consolidadas da Ordem de Serviço e recursos associados.</p>
+            </div>
+            <div class="modal-body-content" style="max-height: 380px; overflow-y: auto; text-align: left; margin-bottom: 24px; font-family: 'Inter', sans-serif;">
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                    <div>
+                        <label style="font-size: 11px; font-weight:600; text-transform:uppercase; color:var(--neutral-medium);">Número da OS</label>
+                        <p id="det-os-numero" style="font-weight: 700; font-size:15px; margin-top:2px; color:var(--secondary);"></p>
+                    </div>
+                    <div>
+                        <label style="font-size: 11px; font-weight:600; text-transform:uppercase; color:var(--neutral-medium);">Técnico Responsável</label>
+                        <p id="det-os-tecnico" style="font-weight: 500; font-size:14px; margin-top:2px; color:var(--secondary);"></p>
+                    </div>
+                    <div>
+                        <label style="font-size: 11px; font-weight:600; text-transform:uppercase; color:var(--neutral-medium);">Máquina Vinculada</label>
+                        <p id="det-os-maquina" style="font-weight: 500; font-size:14px; margin-top:2px; color:var(--secondary);"></p>
+                    </div>
+                    <div>
+                        <label style="font-size: 11px; font-weight:600; text-transform:uppercase; color:var(--neutral-medium);">Status da OS</label>
+                        <p id="det-os-status" style="font-weight: 500; font-size:14px; margin-top:2px; color:var(--secondary);"></p>
+                    </div>
+                    <div>
+                        <label style="font-size: 11px; font-weight:600; text-transform:uppercase; color:var(--neutral-medium);">Observações da OS</label>
+                        <p id="det-os-obs" style="font-size:13px; color:#424242; background:#F5F5F5; padding:10px; border-radius:6px; margin-top:2px; line-height:1.4;"></p>
+                    </div>
+                    <div>
+                        <label style="font-size: 11px; font-weight:600; text-transform:uppercase; color:var(--neutral-medium);">Recursos Solicitados (Kits e Itens)</label>
+                        <div id="det-os-recursos-list" style="margin-top:4px; display:flex; flex-direction:column; gap:6px;">
+                            <!-- Preenchido via JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer-buttons" style="display: flex; justify-content: flex-end;">
+                <button type="button" id="btn-fechar-modal-solicitacao" class="btn-cancelar">Fechar</button>
+            </div>
+        </div>
     </div>
 
     <script src="../mockDb.js"></script>

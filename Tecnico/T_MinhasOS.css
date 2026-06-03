@@ -182,16 +182,86 @@ body {
 /* Layout Grid de Execução */
 .execution-grid {
     display: grid;
-    grid-template-columns: 1fr 360px;
-    gap: 32px;
+    grid-template-columns: 280px 1fr 360px;
+    gap: 20px;
     align-items: start;
     padding-bottom: 40px; /* Garante que o botão final não cole na barra do windows */
+}
+
+/* Coluna de OSs Atribuídas */
+.os-list-column {
+    min-width: 0;
+}
+
+.os-sidebar-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.os-sidebar-item {
+    background: #FAFAFA;
+    border: 1.5px solid #E0E0E0;
+    padding: 12px;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: var(--transition);
+    text-align: left;
+}
+
+.os-sidebar-item:hover {
+    border-color: var(--primary);
+    background: #E3F2FD;
+}
+
+.os-sidebar-item.active {
+    border-color: var(--primary);
+    background: var(--primary);
+    color: var(--white);
+}
+
+.os-sidebar-item.active p, .os-sidebar-item.active span, .os-sidebar-item.active h4 {
+    color: var(--white) !important;
+}
+
+.os-sidebar-item h4 {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.os-sidebar-item p {
+    font-size: 12px;
+    color: var(--neutral-dark);
+    margin-bottom: 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.os-sidebar-item .os-meta-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+}
+
+.os-sidebar-item .os-status-pill {
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 700;
+    text-transform: uppercase;
 }
 
 .card-base {
     background-color: var(--white);
     border-radius: var(--radius-lg);
-    padding: 30px;
+    padding: 24px;
     box-shadow: var(--shadow-sm);
     border: 1px solid #EAEAEA;
 }
@@ -598,8 +668,17 @@ textarea:focus {
 }
 
 /* Responsividade de Fábrica */
+@media (max-width: 1200px) {
+    .execution-grid {
+        grid-template-columns: 240px 1fr;
+    }
+    .actions-column {
+        grid-column: span 2;
+    }
+}
 @media (max-width: 992px) {
     .main-content { max-width: 100%; margin-left: 0; }
     .sidebar { display: none; }
     .execution-grid { grid-template-columns: 1fr; }
+    .actions-column { grid-column: span 1; }
 }

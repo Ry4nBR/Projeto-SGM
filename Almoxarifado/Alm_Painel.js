@@ -68,6 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td class="${item.qtd_atual <= item.qtd_minima ? 'stock-critical' : ''}">${item.qtd_atual} un</td>
                 <td>${item.qtd_minima} un</td>
                 <td>${item.localizacao}</td>
+                <td>${item.nf_origem || 'NF-Estoque-Inicial'}</td>
                 <td><span class="indicator ${indClass}">${indText}</span></td>
             `;
 
@@ -103,18 +104,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const badgeClass = req.tipo === 'Kit Completo' ? 'type-kit' : 'type-avulso';
             const tr = document.createElement('tr');
+            tr.style.cursor = 'pointer';
 
             tr.innerHTML = `
-                <td><span class="badge-type ${badgeClass}">${req.tipo}</span></td>
                 <td class="col-id">#${req.os_codigo}</td>
                 <td><strong>${nomeTecnico}</strong></td>
                 <td><span class="item-name">${req.item_nome}</span></td>
+                <td><span class="badge-type ${badgeClass}">${req.tipo}</span></td>
                 <td>
                     <button class="btn-action btn-dispensar" data-id="${req.id}" data-item="${req.item_nome}" data-os="${req.os_codigo}">
-                        Baixar e Entregar
+                        Confirmar Retirada Física
                     </button>
                 </td>
             `;
+
+            // Clique na linha abre modal de detalhes consolidado
+            tr.addEventListener('click', (e) => {
+                if (e.target.closest('.btn-dispensar')) return;
+                abrirModalDetalhesRequisicao(req);
+            });
 
             tbody.appendChild(tr);
         });
@@ -145,7 +153,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (ativas.length === 0) {
             tbody.innerHTML = `
                 <tr>
-                    <td colspan="5" style="text-align: center; color: var(--neutral-medium); font-style: italic; padding: 24px;">
+                    <td colspan="7" style="text-align: center; color: var(--neutral-medium); font-style: italic; padding: 24px;">
                         Nenhuma pendência de devolução física de ferramentas/kits.
                     </td>
                 </tr>`;
@@ -155,15 +163,20 @@ document.addEventListener('DOMContentLoaded', () => {
         ativas.forEach(cautela => {
             const tech = usuarios.find(u => u.id === cautela.tecnico_id);
             const nomeTecnico = tech ? tech.nome : 'Carlos Silva';
+            const dataRetiradaStr = new Date(cautela.data_retirada).toLocaleString('pt-BR', {
+                day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit'
+            });
 
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td class="col-id">${cautela.codigo_retorno}</td>
-                <td>${nomeTecnico}</td>
+                <td><strong>${nomeTecnico}</strong></td>
                 <td>${cautela.item_nome}</td>
+                <td>#${cautela.os_codigo || 'Sem OS'}</td>
+                <td>${dataRetiradaStr}</td>
                 <td><span class="badge-status status-aguardando">${cautela.status_ativo}</span></td>
                 <td>
-                    <button class="btn-action btn-confirmar" data-id="${cautela.id}" data-item="${cautela.item_nome}" data-os="${cautela.os_codigo || ''}">
+                    <button class="btn-action btn-confirmar" data-id="${cautela.id}" data-item="${cautela.item_nome}">
                         Confirmar Recebimento Físico
                     </button>
                 </td>
@@ -183,16 +196,77 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 4. Lógica de Dispensar Material (Baixar e entregar)
+    // Modal de Detalhes da Requisição
+    function abrirModalDetalhesRequisicao(req) {
+        const modal = document.getElementById('modal-detalhes-solicitacao');
+        if (!modal) return;
+
+        const ordens = mockDb.getOrdensServico();
+        const os = ordens.find(o => o.codigo_os === req.os_codigo);
+        const eqTag = os ? os.equipamento_tag : '';
+        const eq = mockDb.getEquipamentos().find(e => e.tag === eqTag);
+        
+        const usuarios = mockDb.getUsuarios();
+        const tech = usuarios.find(u => u.id === req.tecnico_id);
+        const nomeTecnico = tech ? tech.nome : 'Carlos Silva';
+
+        document.getElementById('det-os-numero').textContent = req.os_codigo;
+        document.getElementById('det-os-tecnico').textContent = nomeTecnico;
+        document.getElementById('det-os-maquina').textContent = eq ? `${eq.tag} - ${eq.nome}` : 'Equipamento não cadastrado';
+        document.getElementById('det-os-status').textContent = os ? os.status_os : 'Aberta';
+        document.getElementById('det-os-obs').textContent = os ? os.descricao_problema : 'Nenhuma observação cadastrada.';
+
+        // Agrupa todas as solicitações dessa OS
+        const todasRequisicoesOS = mockDb.getRequisicoesMateriais().filter(r => r.os_codigo === req.os_codigo);
+        const recursosListDiv = document.getElementById('det-os-recursos-list');
+        recursosListDiv.innerHTML = '';
+
+        todasRequisicoesOS.forEach(r => {
+            const itemDiv = document.createElement('div');
+            itemDiv.style.background = '#FFF';
+            itemDiv.style.border = '1px solid #E0E0E0';
+            itemDiv.style.padding = '8px 12px';
+            itemDiv.style.borderRadius = '4px';
+            itemDiv.style.display = 'flex';
+            itemDiv.style.justifyContent = 'space-between';
+            itemDiv.style.alignItems = 'center';
+            
+            const badgeClass = r.tipo === 'Kit Completo' ? 'type-kit' : 'type-avulso';
+            
+            itemDiv.innerHTML = `
+                <div>
+                    <span style="font-weight:600; font-size:13px;">${r.item_nome}</span>
+                    <span style="font-size:11px; color:#666; margin-left:8px;">(Req #${r.id})</span>
+                </div>
+                <div style="display:flex; gap:8px; align-items:center;">
+                    <span class="badge-type ${badgeClass}" style="font-size:10px; padding:2px 6px;">${r.tipo}</span>
+                    <span style="font-size:12px; font-weight:600; color:#555;">${r.status_requisicao}</span>
+                </div>
+            `;
+            recursosListDiv.appendChild(itemDiv);
+        });
+
+        // Configurar botão fechar
+        document.getElementById('btn-fechar-modal-solicitacao').onclick = () => {
+            modal.classList.add('hidden');
+        };
+
+        modal.classList.remove('hidden');
+    }
+
+    // 4. Lógica de Confirmar Retirada Física (Baixar e entregar)
     function dispensarItemLogica(reqId, itemNome, osCodigo) {
-        if (confirm(`Confirmar a entrega física e dar baixa no estoque para:\n"${itemNome}"?`)) {
-            // 1. Atualiza status da requisição
+        if (confirm(`Confirmar a retirada física de "${itemNome}"?`)) {
+            // 1. Atualizar status da requisição
             mockDb.updateRequisicao(reqId, { status_requisicao: 'Liberado' });
+
+            // Encontra dados no banco
+            const requisicoes = mockDb.getRequisicoesMateriais();
+            const req = requisicoes.find(r => r.id === parseInt(reqId));
+            const tecId = req ? req.tecnico_id : 2;
 
             // 2. Dar baixa física no estoque
             const itens = mockDb.getItensAlmoxarifado();
-            
-            // Tenta encontrar o item pelo nome completo ou aproximado no inventário
             const itemEstoque = itens.find(i => 
                 i.nome.toLowerCase() === itemNome.toLowerCase() || 
                 itemNome.toLowerCase().includes(i.nome.toLowerCase()) ||
@@ -200,7 +274,6 @@ document.addEventListener('DOMContentLoaded', () => {
             );
 
             if (itemEstoque) {
-                // Se for avulso, podemos descontar a quantidade que vem no texto (ex: "2x Contator")
                 let qtdADescontar = 1;
                 const matchQtd = itemNome.match(/^(\d+)x/);
                 if (matchQtd) {
@@ -216,7 +289,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const kits = mockDb.getKitsPadrao();
             const kit = kits.find(k => k.nome_kit.toLowerCase() === itemNome.toLowerCase());
             if (kit) {
-                // Atualiza status do kit
                 const kitsAtualizados = kits.map(k => {
                     if (k.id === kit.id) {
                         return { ...k, status: `Em uso na OS #${osCodigo}` };
@@ -226,7 +298,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 localStorage.setItem(mockDb.KEYS.KITS_PADRAO, JSON.stringify(kitsAtualizados));
             }
 
-            alert('Retirada registrada no Almoxarifado! Estoque atualizado física e logicamente.');
+            // 4. Inserir a solicitação na tabela Retorno de Ferramental para Estoque (CONTROLE_FERRAMENTAL)
+            mockDb.saveControleFerramental({
+                requisicao_id: parseInt(reqId),
+                tecnico_id: tecId,
+                item_codigo: itemEstoque ? itemEstoque.codigo : 'FE-0000',
+                item_nome: itemNome,
+                status_ativo: 'Em campo com técnico',
+                data_retirada: new Date().toISOString(),
+                os_codigo: osCodigo
+            });
+
+            alert('Retirada física confirmada no Almoxarifado! Ferramentas transferidas para a guarda do técnico.');
             renderizarTudo();
         }
     }
@@ -255,8 +338,14 @@ document.addEventListener('DOMContentLoaded', () => {
             );
 
             if (itemEstoque) {
+                let qtdAIncrementar = 1;
+                const matchQtd = itemNome.match(/^(\d+)x/);
+                if (matchQtd) {
+                    qtdAIncrementar = parseInt(matchQtd[1]);
+                }
+
                 mockDb.updateItemAlmoxarifado(itemEstoque.codigo, {
-                    qtd_atual: itemEstoque.qtd_atual + 1
+                    qtd_atual: itemEstoque.qtd_atual + qtdAIncrementar
                 });
             }
 
@@ -273,52 +362,53 @@ document.addEventListener('DOMContentLoaded', () => {
                 localStorage.setItem(mockDb.KEYS.KITS_PADRAO, JSON.stringify(kitsAtualizados));
             }
 
-            // 4. Encontrar a OS vinculada e finalizá-la (Concluído)
-            // Para encontrar, pegamos as requisições liberadas dessa OS
-            const requisicoes = mockDb.getRequisicoesMateriais();
-            let reqVinculada = null;
-            if (cautela) {
-                reqVinculada = requisicoes.find(r => r.id === cautela.requisicao_id);
-            }
+            // 4. Encontrar a OS vinculada e finalizá-la (Concluído) se todos os ativos foram devolvidos
+            let osCodigo = cautela ? cautela.os_codigo : null;
+            
+            if (osCodigo) {
+                // Checa se há alguma outra cautela pendente para esta mesma OS
+                const pendencias = cautelas.filter(c => c.os_codigo === osCodigo && c.status_ativo === 'Em campo com técnico');
+                
+                if (pendencias.length === 0) {
+                    const ordens = mockDb.getOrdensServico();
+                    const os = ordens.find(o => o.codigo_os === osCodigo);
 
-            if (reqVinculada) {
-                const osCodigo = reqVinculada.os_codigo;
-                const ordens = mockDb.getOrdensServico();
-                const os = ordens.find(o => o.codigo_os === osCodigo);
+                    if (os) {
+                        // Atualiza status da OS para Concluído
+                        mockDb.updateOrdemServico(os.id, {
+                            status_os: 'Concluído',
+                            data_fechamento: new Date().toISOString()
+                        });
 
-                if (os) {
-                    // Atualiza status da OS para Concluído
-                    mockDb.updateOrdemServico(os.id, {
-                        status_os: 'Concluído',
-                        data_fechamento: new Date().toISOString()
-                    });
+                        // Atualiza máquina para 'Operando'
+                        mockDb.updateEquipamento(os.equipamento_tag, { status_equipamento: 'Operando' });
 
-                    // Atualiza máquina para 'Operando'
-                    mockDb.updateEquipamento(os.equipamento_tag, { status_equipamento: 'Operando' });
+                        // 5. Gerar Log no Histórico da Máquina
+                        const usuarios = mockDb.getUsuarios();
+                        const tech = usuarios.find(u => u.id === os.tecnico_id);
+                        const techName = tech ? tech.nome : 'Carlos Silva';
 
-                    // 5. Gerar Log no Histórico da Máquina
-                    const usuarios = mockDb.getUsuarios();
-                    const tech = usuarios.find(u => u.id === os.tecnico_id);
-                    const techName = tech ? tech.nome : 'Carlos Silva';
+                        const requisicoes = mockDb.getRequisicoesMateriais();
+                        const materiaisUsados = requisicoes
+                            .filter(r => r.os_codigo === osCodigo)
+                            .map(r => r.item_nome);
 
-                    // Coleta todos os materiais usados nessa OS
-                    const materiaisUsados = requisicoes
-                        .filter(r => r.os_codigo === osCodigo)
-                        .map(r => r.item_nome);
+                        const dataLog = new Date().toLocaleString('pt-BR', {
+                            day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit'
+                        }).replace(',', ' -');
 
-                    const dataLog = new Date().toLocaleString('pt-BR', {
-                        day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit'
-                    }).replace(',', ' -');
+                        mockDb.addHistoricoLog(os.equipamento_tag, {
+                            data: dataLog,
+                            tipo: os.tipo_falha,
+                            tecnico: techName,
+                            pecas: materiaisUsados.length > 0 ? materiaisUsados : ['Nenhum (Apenas ajuste/limpeza)'],
+                            relato: os.diagnostico_tecnico || 'Intervenção concluída com sucesso e retorno de ferramentas validado pelo Almoxarifado.'
+                        });
 
-                    mockDb.addHistoricoLog(os.equipamento_tag, {
-                        data: dataLog,
-                        tipo: os.tipo_falha,
-                        tecnico: techName,
-                        pecas: materiaisUsados.length > 0 ? materiaisUsados : ['Nenhum (Apenas ajuste/limpeza)'],
-                        relato: os.diagnostico_tecnico || 'Intervenção concluída com sucesso e retorno de ferramentas validado pelo Almoxarifado.'
-                    });
-
-                    alert(`Recebimento físico confirmado!\nA OS #${osCodigo} associada foi alterada para "Concluído" e as informações integradas no histórico do Administrador.`);
+                        alert(`Recebimento físico confirmado!\nTodas as ferramentas foram devolvidas. A OS #${osCodigo} foi alterada para "Concluído" e a máquina marcada como "Operando".`);
+                    }
+                } else {
+                    alert(`Recebimento confirmado! O técnico ainda possui ${pendencias.length} ativo(s) pendente(s) de devolução para a OS #${osCodigo}.`);
                 }
             } else {
                 alert('Material devolvido e adicionado com sucesso ao estoque!');
@@ -348,7 +438,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Incrementa estoque em lote (peças +10, ferramentas +5)
                 const incremento = item.categoria === 'Peça de Reposição' ? 10 : 5;
                 mockDb.updateItemAlmoxarifado(item.codigo, {
-                    qtd_atual: item.qtd_atual + incremento
+                    qtd_atual: item.qtd_atual + incremento,
+                    nf_origem: nomeArquivo.replace('.xml', '') // usa o nome do xml como NF
                 });
             });
 
@@ -368,6 +459,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const nomeItem = document.getElementById('txt-nome-item').value.trim();
         const qtdInicial = parseInt(document.getElementById('txt-qtd-inicial').value);
         const qtdMinima = parseInt(document.getElementById('txt-qtd-minima').value);
+        const nfOrigem = document.getElementById('txt-nf-origem').value.trim();
 
         // Verifica se já existe um item com esse nome no estoque
         const itens = mockDb.getItensAlmoxarifado();
@@ -377,7 +469,8 @@ document.addEventListener('DOMContentLoaded', () => {
             // Apenas atualiza a quantidade somando
             mockDb.updateItemAlmoxarifado(itemExistente.codigo, {
                 qtd_atual: itemExistente.qtd_atual + qtdInicial,
-                qtd_minima: qtdMinima
+                qtd_minima: qtdMinima,
+                nf_origem: nfOrigem
             });
             alert(`Sucesso! O saldo do item existente "${itemExistente.nome}" foi incrementado em +${qtdInicial} un.`);
         } else {
@@ -387,7 +480,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 categoria: 'Peça de Reposição',
                 qtd_atual: qtdInicial,
                 qtd_minima: qtdMinima,
-                localizacao: 'Armário Geral C - Prateleira 4'
+                localizacao: 'Armário Geral C - Prateleira 4',
+                nf_origem: nfOrigem
             });
             alert(`Sucesso! O novo componente "${nomeItem}" foi adicionado com sucesso ao inventário da fábrica.`);
         }
