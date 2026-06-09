@@ -409,3 +409,99 @@ tr:hover td {
     background-color: rgba(211, 47, 47, 0.15) !important;
     color: #FF8A80 !important;
 }
+
+/* Modal and Details Styling */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+    transition: var(--transition);
+}
+
+.modal-card {
+    background-color: var(--white);
+    border-radius: var(--radius-lg);
+    padding: 32px;
+    width: 100%;
+    max-width: 600px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    animation: scaleUp 0.2s ease-out;
+}
+
+.modal-header h3 {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+
+.modal-header p {
+    font-size: 14px;
+    color: var(--neutral-dark);
+    margin-bottom: 24px;
+}
+
+.modal-footer-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+.btn-cancelar {
+    background-color: var(--neutral-light);
+    color: var(--neutral-dark);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: var(--transition);
+}
+
+.btn-cancelar:hover {
+    background-color: #e0e0e0;
+}
+
+#tabela-os tbody tr {
+    cursor: pointer;
+}
+
+.badge-crit {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.criticidade-alta {
+    background-color: var(--badge-devolucao-bg); /* #FFEbee */
+    color: var(--badge-devolucao-co); /* #C62828 */
+}
+
+.criticidade-media {
+    background-color: var(--badge-aguardando-bg); /* #FFF3E0 */
+    color: var(--badge-aguardando-co); /* #E65100 */
+}
+
+.criticidade-baixa {
+    background-color: var(--badge-concluido-bg); /* #E8F5E9 */
+    color: var(--badge-concluido-co); /* #2E7D32 */
+}
+
+@keyframes scaleUp {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}

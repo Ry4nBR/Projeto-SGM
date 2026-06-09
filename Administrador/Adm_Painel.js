@@ -9,8 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const tabelaOS = document.getElementById('table-master-os');
     const tabelaCorpo = tabelaOS.querySelector('tbody');
 
-    const modalDetailsAdm = document.getElementById('modal-detalhes-os-adm');
-    const btnFecharModalAdm = document.getElementById('btn-fechar-modal-detalhes-adm');
+
 
     // 1. Carregar nome do usuário logado na barra lateral
     const user = mockDb.getLoggedUser();
@@ -203,66 +202,12 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
 
-        tabelaCorpo.querySelectorAll('tr').forEach(tr => {
-            tr.style.cursor = 'pointer';
-            tr.addEventListener('click', (e) => {
-                if (e.target.closest('.select-table-reassign')) return;
-                const osId = parseInt(tr.querySelector('.select-table-reassign')?.getAttribute('data-os-id'));
-                const os = ordens.find(o => o.id === osId);
-                if (os) abrirModalDetalhesOSAdm(os);
-            });
-        });
+
 
         executarFiltragem();
     }
 
-    function abrirModalDetalhesOSAdm(os) {
-        if (!modalDetailsAdm) return;
-        const equipamentos = mockDb.getEquipamentos();
-        const eq = equipamentos.find(e => e.tag === os.equipamento_tag);
-        const usuarios = mockDb.getUsuarios();
-        const solicitante = os.solicitante_id ? usuarios.find(u => u.id === os.solicitante_id) : null;
-        const solicitanteNome = solicitante ? solicitante.nome : 'Desconhecido';
 
-        document.getElementById('adm-modal-os-titulo').textContent = `Ordem de Serviço #${os.codigo_os}`;
-        document.getElementById('adm-modal-os-maquina').textContent = eq ? `${eq.tag} - ${eq.nome}` : os.equipamento_tag;
-        document.getElementById('adm-modal-os-setor').textContent = eq ? eq.setor : (os.setor || 'Chão de Fábrica');
-        document.getElementById('adm-modal-os-falha').textContent = os.tipo_falha;
-
-        const criticidade = os.criticidade || 'Média';
-        const critClass = criticidade === 'Alta' ? 'criticidade-alta' : (criticidade === 'Baixa' ? 'criticidade-baixa' : 'criticidade-media');
-        document.getElementById('adm-modal-os-criticidade').innerHTML = `<span class="badge-crit ${critClass}">${criticidade}</span>`;
-
-        document.getElementById('adm-modal-os-desc').textContent = os.descricao_problema;
-        document.getElementById('adm-modal-os-solicitante').textContent = solicitanteNome;
-        document.getElementById('adm-modal-os-data').textContent = new Date(os.data_abertura).toLocaleString('pt-BR');
-
-        const historicoDiv = document.getElementById('adm-modal-os-historico');
-        historicoDiv.innerHTML = '';
-        const historicos = mockDb.getHistoricoMaquinas();
-        const logsMaquina = historicos[os.equipamento_tag];
-
-        if (!logsMaquina || !logsMaquina.logs || logsMaquina.logs.length === 0) {
-            historicoDiv.innerHTML = '<p style="color:var(--neutral-medium); font-style:italic; font-size:12px; margin:0;">Nenhuma intervenção anterior para esta máquina.</p>';
-        } else {
-            logsMaquina.logs.forEach(l => {
-                const logItem = document.createElement('div');
-                logItem.style.marginBottom = '8px';
-                logItem.style.borderBottom = '1px solid #EEE';
-                logItem.style.paddingBottom = '6px';
-                logItem.innerHTML = `
-                    <div style="display:flex; justify-content:space-between; font-weight:600; font-size:11px; color:#555;">
-                        <span>${l.data.split(' - ')[0]} (${l.tipo})</span>
-                        <span>Téc. ${l.tecnico}</span>
-                    </div>
-                    <p style="margin:2px 0 0 0; font-size:12px; line-height:1.3;">${l.relato}</p>
-                `;
-                historicoDiv.appendChild(logItem);
-            });
-        }
-
-        modalDetailsAdm.classList.remove('hidden');
-    }
 
     // 5. Lógica de Reatribuição do Técnico pelo Administrador
     function reatribuirTecnicoLogica(osId, selectedVal) {
@@ -347,14 +292,7 @@ document.addEventListener('DOMContentLoaded', () => {
     filterCriticidade.addEventListener('change', executarFiltragem);
     filterStatus.addEventListener('change', executarFiltragem);
 
-    if (btnFecharModalAdm) {
-        btnFecharModalAdm.addEventListener('click', () => modalDetailsAdm.classList.add('hidden'));
-    }
-    if (modalDetailsAdm) {
-        modalDetailsAdm.addEventListener('click', (e) => {
-            if (e.target === modalDetailsAdm) modalDetailsAdm.classList.add('hidden');
-        });
-    }
+
 
     // Inicialização da tela
     renderizarMetricas();
