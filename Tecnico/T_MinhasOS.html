@@ -65,18 +65,6 @@
             </header>
 
             <div class="execution-grid">
-                <!-- Coluna de OSs Atribuídas -->
-                <div class="os-list-column">
-                    <div class="card-base">
-                        <div class="card-header-inside">
-                            <h3>OSs Atribuídas</h3>
-                        </div>
-                        <ul id="lista-os-atribuidas" class="os-sidebar-list">
-                            <li class="empty-list-notice">Carregando...</li>
-                        </ul>
-                    </div>
-                </div>
-
                 <div class="details-column">
                     <div class="card-base">
                         <div class="card-header-inside">
@@ -120,6 +108,18 @@
                         </div>
                     </div>
 
+                    <!-- Coluna de OSs Atribuídas (lista completa) -->
+                    <div class="os-list-column" style="margin-top: 20px;">
+                        <div class="card-base">
+                            <div class="card-header-inside">
+                                <h3>OSs Atribuídas</h3>
+                            </div>
+                            <ul id="lista-os-atribuidas" class="os-sidebar-list">
+                                <li class="empty-list-notice">Carregando...</li>
+                            </ul>
+                        </div>
+                    </div>
+
                     <!-- Novo card: Histórico da Máquina -->
                     <div class="card-base" style="margin-top: 20px;">
                         <div class="card-header-inside">
@@ -154,7 +154,7 @@
                         <div class="action-form-group">
                             <label for="select-alterar-status">Alterar Status Atual</label>
                             <select id="select-alterar-status">
-                                <option value="Em Manutenção" selected>Em Manutenção</option>
+                                <option value="Em Andamento" selected>Em Manutenção</option>
                                 <option value="Aguardando Peças">Aguardando Peças</option>
                             </select>
                         </div>

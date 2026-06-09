@@ -1,0 +1,685 @@
+leia o plano que está no arquivo @planinho, tenho certeza que algumas coisas já foram adicionadas mas outras não, as que já foram atualizadas não precisa refazer, e as que não estão atualizadas atualize. Então primeiro vai ter que analisar e criar um novo arquivo com o que não foi implementado
+
+
+
+
+# Planinho — Plano de Implementação das Melhorias do SGM
+
+Este arquivo reúne o plano de alterações para as telas de Usuário, Técnico, Almoxarifado e Administrador do Sistema de Gestão de Manutenção.
+
+---
+
+## 1. Preparação da base de dados
+
+**Arquivo principal:** `mockDb.js`
+
+Antes de alterar as telas, ajustar o banco simulado para suportar os novos campos e evitar que telas quebrem quando algum dado ainda não existir.
+
+### Ajustes necessários
+
+Adicionar ou garantir compatibilidade com:
+
+- Campo `criticidade: 'Baixa'` nas OS.
+- OS antigas sem `criticidade` devem aparecer como `Média` ou `Alta`, sem quebrar a tela.
+- Usuários com:
+  - `senha`
+  - `foto` em Base64
+- Máquinas/equipamentos com:
+  - `fabricante`
+  - `modelo`
+  - `numero_serie`
+  - `data_aquisicao`
+  - `nf`
+  - `descricao`
+  - `status_operacional`
+- Kits padronizados com:
+  - `descricao`
+  - `itens`
+  - `status`
+  - `maquina_vinculo`
+- Itens do almoxarifado com:
+  - `nf_origem`
+  - `descricao`, se necessário
+- Controle ferramental com:
+  - `os_codigo`
+  - `kit_nome`
+  - `itens_solicitados`
+  - `status_ativo`
+
+### Importante
+
+Como o projeto usa `localStorage`, precisa ter uma migração simples para dados antigos.
+
+Exemplo:
+
+```js
+if (!os.criticidade) {
+    os.criticidade = 'Média';
+}
+```
+
+---
+
+## 2. Tela do Usuário — `U_AberturaOS`
+
+**Arquivos:**
+
+- `Usuario/U_AberturaOS.html`
+- `Usuario/U_AberturaOS.css`
+- `Usuario/U_AberturaOS.js`
+
+### Objetivo
+
+Permitir abertura de OS com baixa prioridade.
+
+### Alterações
+
+Adicionar opção:
+
+- **Baixa Prioridade**
+  - Para manutenção preventiva, pequenos reparos, melhorias ou solicitações não urgentes.
+
+Fluxo esperado:
+
+1. Usuário escolhe máquina.
+2. Usuário escolhe setor.
+3. Usuário informa problema.
+4. Usuário escolhe condição:
+   - Baixa Prioridade
+   - Funcionando com Restrição
+   - Parada Total
+5. Sistema calcula criticidade:
+   - Baixa Prioridade → `Baixa`
+   - Restrição → `Média`
+   - Parada Total → `Alta`
+6. OS é salva no `mockDb`.
+
+### Critério de aceite
+
+Ao abrir uma OS de baixa prioridade, ela deve aparecer nos painéis com:
+
+```txt
+Criticidade: Baixa
+```
+
+---
+
+## 3. Tela do Técnico — `T_Painel`
+
+**Arquivos:**
+
+- `Tecnico/T_Painel.html`
+- `Tecnico/T_Painel.js`
+
+### Objetivo
+
+Ao clicar em uma OS da fila geral, abrir um modal com todas as informações da OS.
+
+### Alterações
+
+Na tabela do painel, cada linha deve ter evento de clique.
+
+Ao clicar em uma OS, abrir modal com:
+
+- Código da OS
+- Máquina
+- Setor
+- Tipo de falha
+- Criticidade
+- Descrição do problema
+- Solicitante
+- Data de abertura
+- Técnico atual
+- Histórico da máquina
+- Botão “Assumir OS”
+
+### Fluxo esperado
+
+1. Técnico acessa `T_Painel.html`.
+2. Vê OS abertas.
+3. Clica em uma OS.
+4. Modal abre com detalhes.
+5. Técnico clica em “Assumir OS”.
+6. Sistema atualiza:
+   - `tecnico_id`
+   - `status_os: 'Em Andamento'`
+   - `data_inicio_manutencao`
+7. Redireciona para:
+
+```txt
+T_MinhasOS.html?os=OS-2026-xxx
+```
+
+---
+
+## 4. Tela do Técnico — `T_MinhasOS`
+
+**Arquivos:**
+
+- `Tecnico/T_MinhasOS.html`
+- `Tecnico/T_MinhasOS.css`
+- `Tecnico/T_MinhasOS.js`
+
+### Objetivo
+
+Exibir as OS atribuídas ao técnico em lista e permitir abrir os detalhes e ações de execução.
+
+### Layout sugerido
+
+Dividir a área principal em três partes:
+
+1. **Lista de OS atribuídas**
+2. **Detalhes da OS selecionada**
+3. **Ações de execução**
+
+### Lista de OS atribuídas
+
+Exibir:
+
+- Código da OS
+- Máquina
+- Criticidade
+- Status
+- Setor
+
+Ao clicar em uma OS:
+
+- Atualiza o cabeçalho da tela.
+- Atualiza os detalhes.
+- Atualiza as ações disponíveis.
+- Mantém o técnico na mesma tela.
+
+### Detalhes da OS
+
+Mostrar:
+
+- Máquina
+- Setor
+- Tipo de falha
+- Descrição
+- Solicitante
+- Data de abertura
+- Criticidade
+- Observações / diagnóstico técnico
+- Histórico de manutenções anteriores da máquina
+
+### Ações de execução
+
+#### 1. Alterar status
+
+Permitir trocar entre:
+
+- Em Andamento
+- Aguardando Peças
+- Aguardando Devolução de Ferramentas
+- Concluído, quando aplicável
+
+#### 2. Solicitar Kit Padrão
+
+Ao invés de apenas um botão direto, adicionar:
+
+- Select com kits disponíveis.
+- Descrição do kit.
+- Lista de ferramentas e peças inclusas.
+
+Exemplo:
+
+```txt
+Kit Padrão Mecânica Avançada #01
+Descrição: Kit para manutenção mecânica em prensa hidráulica.
+Itens inclusos:
+- Chave Allen
+- Alicate de pressão
+- Martelo de retrocesso
+```
+
+#### 3. Solicitar itens avulsos
+
+O técnico deve conseguir selecionar ferramentas e peças disponíveis no almoxarifado.
+
+Exibir:
+
+- Nome do item
+- Código
+- Categoria
+- Quantidade disponível
+- Localização
+
+### Critério de aceite
+
+Ao solicitar kit ou item avulso, a solicitação deve aparecer na tela do Almoxarifado em:
+
+```txt
+Solicitações de Retirada
+```
+
+---
+
+## 5. Tela do Almoxarifado — `Alm_Painel`
+
+**Arquivos:**
+
+- `Almoxarifado/Alm_Painel.html`
+- `Almoxarifado/Alm_Painel.js`
+
+---
+
+## 5.1. Aba “Retiradas e Devoluções”
+
+### Solicitações de retirada
+
+Na tabela superior, exibir:
+
+- Número da OS
+- Técnico responsável
+- Kit / item designado
+- Tipo
+- OS vinculada
+- Ação física
+
+O botão deve ter o texto:
+
+```txt
+Confirmar retirada física
+```
+
+### Ao clicar em “Confirmar retirada física”
+
+O sistema deve:
+
+1. Remover ou ocultar a solicitação da tabela superior.
+2. Atualizar status da requisição para:
+
+```txt
+Liberado
+```
+
+3. Inserir registro na tabela inferior.
+4. Definir status como:
+
+```txt
+Em campo com técnico
+```
+
+5. Dar baixa no estoque físico.
+6. Se for kit, marcar o kit como em uso.
+7. Associar a OS corretamente.
+
+### Ao clicar na solicitação
+
+Abrir modal com:
+
+- Número da OS
+- Técnico responsável
+- Máquina vinculada
+- Status da OS
+- Descrição / observações da OS
+- Kit solicitado
+- Itens solicitados
+- Status da solicitação
+
+Se houver mais de um kit ou item, mostrar todos.
+
+---
+
+## 5.2. Aba “Entrada de Notas Fiscais”
+
+### Cadastro unificado de material
+
+Adicionar campo:
+
+```txt
+NF de Origem
+```
+
+Exemplo:
+
+```txt
+NF-2026-9051
+```
+
+Ao cadastrar item, salvar também:
+
+```js
+nf_origem
+```
+
+E exibir esse valor na tabela de inventário.
+
+### Critério de aceite
+
+Ao cadastrar uma peça manualmente, ela deve aparecer na aba Inventário com:
+
+- Nome
+- Quantidade
+- Estoque mínimo
+- Localização
+- NF de origem
+- Disponibilidade
+
+---
+
+## 6. Tela Administrador — Acompanhamento de OS
+
+**Arquivos:**
+
+- `Administrador/Adm_Painel.html`
+- `Administrador/Adm_Painel.js`
+
+### Objetivo
+
+Corrigir a tela para exibir as mesmas OS das demais telas.
+
+### Alterações
+
+A tabela deve carregar dados diretamente de:
+
+```js
+mockDb.getOrdensServico()
+```
+
+Exibir colunas:
+
+- Código da OS
+- Equipamento
+- Solicitante
+- Setor
+- Criticidade
+- Status
+- Técnico atual
+- Data de abertura
+- Observações
+- Intervenção / reatribuição
+
+### Filtros
+
+Manter filtros por:
+
+- Técnico
+- Setor
+- Criticidade
+- Status
+
+### Modal de detalhes
+
+Ao clicar em uma OS, abrir modal com:
+
+- Máquina
+- Setor
+- Tipo de falha
+- Criticidade
+- Descrição
+- Solicitante
+- Data
+- Histórico
+- Técnico atual
+
+### Critério de aceite
+
+A tela não pode ficar em branco.
+
+Todas as OS criadas pelo usuário devem aparecer aqui também.
+
+---
+
+## 7. Tela Administrador — `Adm_Kits`
+
+**Arquivos:**
+
+- `Administrador/Adm_Kits.html`
+- `Administrador/Adm_Kits.js`
+
+---
+
+## 7.1. Substituir bloco “Inserir Item no Almoxarifado”
+
+Trocar por:
+
+```txt
+Cadastro de Máquinas
+```
+
+### Campos do cadastro
+
+- Código / Tag
+- Nome da máquina
+- Setor
+- Fabricante
+- Modelo
+- Número de série
+- Data de aquisição
+- Nota fiscal
+- Descrição
+- Status operacional
+
+Exemplo de status:
+
+- Operando
+- Em manutenção
+- Parado
+- Em observação
+
+### Fluxo esperado
+
+1. Administrador cadastra máquina.
+2. Máquina é salva em `mockDb`.
+3. Máquina aparece automaticamente nos selects de:
+   - `U_AberturaOS`
+   - `T_MinhasOS`
+   - `Adm_Kits`
+   - demais telas que usam máquinas
+
+---
+
+## 7.2. Bloco “Estruturar Novo Kit Padronizado”
+
+### Alteração importante
+
+Na parte de ferramentas incluídas, exibir somente:
+
+- Ferramentas avulsas
+- Peças de reposição
+
+Não exibir kits já criados.
+
+### Funcionalidade
+
+Permitir criar kit com:
+
+- Nome do kit
+- Descrição
+- Máquina vinculada
+- Ferramentas/peças inclusas
+- Quantidade de cada item
+
+### Critério de aceite
+
+Após criar kit:
+
+- Deve aparecer na tela do Técnico.
+- Deve aparecer na lista de kits disponíveis.
+- Deve aparecer na tela do Almoxarifado.
+- Deve aparecer no painel de rastreabilidade do Administrador.
+
+---
+
+## 7.3. Bloco “Kits Cadastrados e Status Operacional de Rastreabilidade”
+
+### Objetivo
+
+Os dados devem bater com a tela do Almoxarifado.
+
+Exibir:
+
+- Nome do kit
+- Descrição
+- Máquina vinculada
+- Status:
+  - Disponível
+  - Em uso na OS
+  - Em manutenção
+  - Indisponível
+- OS vinculada, se houver
+- Técnico responsável, se houver
+- Data de retirada, se houver
+
+### Critério de aceite
+
+Se o Almoxarifado confirmar retirada física, o status do kit deve mudar para:
+
+```txt
+Em uso na OS #xxx
+```
+
+Se o Almoxarifado confirmar devolução, deve voltar para:
+
+```txt
+Disponível
+```
+
+---
+
+## 8. Tela Administrador — `Adm_Usuarios`
+
+**Arquivos:**
+
+- `Administrador/Adm_Usuarios.html`
+- `Administrador/Adm_Usuarios.js`
+
+### Objetivo
+
+Permitir cadastrar senha e foto do usuário.
+
+---
+
+## 8.1. Cadastrar novo usuário
+
+Adicionar campos:
+
+- Senha
+- Confirmar senha
+- Foto do usuário
+
+### Validações
+
+- Senha obrigatória.
+- Confirmar senha deve ser igual à senha.
+- Foto opcional.
+- Converter foto para Base64 com `FileReader`.
+
+---
+
+## 8.2. Editar usuário
+
+Permitir alterar:
+
+- Nome
+- E-mail
+- Matrícula
+- Cargo
+- Senha
+- Foto
+
+Ao editar, carregar foto atual, se existir.
+
+### Critério de aceite
+
+Ao atualizar usuário com foto, a foto deve aparecer:
+
+- Na tabela de usuários.
+- Na barra lateral, quando esse usuário fizer login.
+- No DevHUD, se aplicável.
+
+---
+
+# Ordem recomendada de implementação
+
+Para evitar retrabalho, fazer nesta ordem:
+
+## Fase 1 — Base e correções críticas
+
+1. Ajustar `mockDb.js`.
+2. Garantir compatibilidade com OS sem `criticidade`.
+3. Garantir que `Adm_Painel.js` carregue OS corretamente.
+4. Validar abertura de OS com criticidade `Baixa`.
+
+## Fase 2 — Técnico
+
+1. Implementar clique nas OS em `T_Painel`.
+2. Implementar modal de detalhes.
+3. Implementar lista de OS atribuídas em `T_MinhasOS`.
+4. Implementar detalhes dinâmicos da OS selecionada.
+5. Implementar seleção de kits e itens avulsos.
+
+## Fase 3 — Almoxarifado
+
+1. Ajustar tabela de retiradas.
+2. Implementar botão “Confirmar retirada física”.
+3. Mover solicitação para tabela de retorno.
+4. Implementar modal de detalhes da solicitação.
+5. Adicionar NF de origem no cadastro de materiais.
+
+## Fase 4 — Administrador
+
+1. Corrigir acompanhamento de OS.
+2. Implementar reatribuição.
+3. Implementar cadastro de máquinas.
+4. Ajustar criação de kits.
+5. Ajustar rastreabilidade de kits.
+
+## Fase 5 — Usuários
+
+1. Adicionar senha no cadastro.
+2. Adicionar upload de foto.
+3. Permitir edição de foto.
+4. Exibir avatar nas barras laterais.
+
+---
+
+# Critérios gerais de aceite
+
+Ao final, o sistema deve permitir este fluxo completo:
+
+1. Usuário abre OS com criticidade baixa, média ou alta.
+2. OS aparece no painel do técnico.
+3. Técnico clica na OS e visualiza detalhes.
+4. Técnico assume a OS.
+5. OS aparece em “Minhas OS”.
+6. Técnico solicita kit ou item avulso.
+7. Solicitação aparece no Almoxarifado.
+8. Almoxarifado confirma retirada física.
+9. Item ou kit aparece como em campo com técnico.
+10. Almoxarifado confirma devolução.
+11. OS pode ser concluída.
+12. Administrador vê todas as OS, máquinas, kits e usuários atualizados.
+
+---
+
+# Arquivos que serão impactados
+
+| Módulo | Arquivos |
+|---|---|
+| Base | `mockDb.js` |
+| Usuário | `Usuario/U_AberturaOS.html`, `.css`, `.js` |
+| Técnico | `Tecnico/T_Painel.html`, `.js` |
+| Técnico | `Tecnico/T_MinhasOS.html`, `.css`, `.js` |
+| Almoxarifado | `Almoxarifado/Alm_Painel.html`, `.js` |
+| Administrador | `Administrador/Adm_Painel.js` |
+| Administrador | `Administrador/Adm_Kits.html`, `.js` |
+| Administrador | `Administrador/Adm_Usuarios.html`, `.js` |
+
+---
+
+# Sugestão de divisão em commits
+
+Se for versionar no Git, separar assim:
+
+1. `feat: adiciona criticidade baixa e compatibilidade de OS`
+2. `feat: detalhes de OS no painel do técnico`
+3. `feat: lista e execução de OS atribuídas`
+4. `feat: controle de retirada física no almoxarifado`
+5. `feat: NF de origem no cadastro de materiais`
+6. `feat: acompanhamento geral de OS no administrador`
+7. `feat: cadastro de máquinas`
+8. `feat: cadastro e rastreabilidade de kits`
+9. `feat: senha e foto de usuários`

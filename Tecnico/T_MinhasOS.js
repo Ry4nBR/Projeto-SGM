@@ -15,7 +15,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const tabButtons = document.querySelectorAll('.tab-btn');
     const tabContents = document.querySelectorAll('.tab-content');
     const btnAddItemLista = document.getElementById('btn-add-item-lista');
-    const inputItemNome = document.getElementById('input-item-nome');
     const inputItemQtd = document.getElementById('input-item-qtd');
     const listaItensRequisicao = document.getElementById('lista-itens-requisicao');
     const btnEnviarRequisicaoAvulsa = document.getElementById('btn-enviar-requisicao-avulsa');

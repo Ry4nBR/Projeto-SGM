@@ -32,6 +32,7 @@ body {
     background-color: var(--neutral-light);
     color: var(--secondary);
     min-height: 100vh;
+    overflow-x: hidden;
 }
 
 .app-container {
@@ -110,8 +111,7 @@ body {
 .main-content {
     flex-grow: 1;
     padding: 40px;
-    max-width: 1400px;
-    margin: 0 auto;
+    overflow-x: auto;
     width: 100%;
 }
 
@@ -231,7 +231,7 @@ select:focus { border-color: var(--primary); }
 }
 
 .table-container { width: 100%; overflow-x: auto; }
-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 15px; min-width: 1000px; }
+table { width: 100%; border-collapse: collapse; text-align: left; font-size: 15px; min-width: 0; }
 th, td { padding: 16px 24px; border-bottom: 1px solid #EAEAEA; vertical-align: top; line-height: 1.5; }
 th { font-weight: 600; color: var(--neutral-dark); font-size: 13px; text-transform: uppercase; background-color: #FAFAFA; border-bottom: 2px solid #EAEAEA; }
 

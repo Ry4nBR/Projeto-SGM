@@ -41,6 +41,7 @@ body {
     background-color: var(--neutral-light);
     color: var(--secondary);
     min-height: 100vh;
+    overflow-x: hidden;
 }
 
 .app-container {
@@ -138,8 +139,7 @@ body {
     display: flex;
     flex-direction: column;
     padding: 40px;
-    max-width: 1400px;
-    margin: 0 auto;
+    overflow-x: auto;
     width: 100%;
 }
 

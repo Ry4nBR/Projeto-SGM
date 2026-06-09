@@ -37,17 +37,23 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // 3.1. RENDERIZAR INVENTÁRIO
-    function renderizarInventario() {
+    function renderizarInventario(filtro) {
         const itens = mockDb.getItensAlmoxarifado();
         const tbody = document.querySelector('#tab-inventario tbody');
         if (!tbody) return;
 
+        const termo = (filtro || '').toLowerCase().trim();
+        const itensFiltrados = termo ? itens.filter(i => 
+            i.nome.toLowerCase().includes(termo) || 
+            i.codigo.toLowerCase().includes(termo) || 
+            i.categoria.toLowerCase().includes(termo)
+        ) : itens;
+
         tbody.innerHTML = '';
 
-        itens.forEach(item => {
+        itensFiltrados.forEach(item => {
             const tr = document.createElement('tr');
             
-            // Lógica de status de disponibilidade
             let indClass = 'ind-disponivel';
             let indText = 'Disponível';
             
@@ -74,6 +80,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
             tbody.appendChild(tr);
         });
+
+        if (itensFiltrados.length === 0 && termo) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="8" style="text-align: center; color: var(--neutral-medium); font-style: italic; padding: 24px;">
+                        Nenhum item encontrado para "${filtro}".
+                    </td>
+                </tr>`;
+        }
     }
 
     // 3.2. RENDERIZAR RETIRADAS (FILA GERAL DE LIBERAÇÃO)
@@ -492,4 +507,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Inicializa a renderização de todas as abas
     renderizarTudo();
+
+    // Search filter for inventory
+    const inputBuscaInventario = document.getElementById('input-busca-inventario');
+    if (inputBuscaInventario) {
+        inputBuscaInventario.addEventListener('input', (e) => {
+            renderizarInventario(e.target.value);
+        });
+    }
 });

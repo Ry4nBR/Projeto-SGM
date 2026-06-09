@@ -182,10 +182,10 @@ body {
 /* Layout Grid de Execução */
 .execution-grid {
     display: grid;
-    grid-template-columns: 280px 1fr 360px;
+    grid-template-columns: 1fr 360px;
     gap: 20px;
     align-items: start;
-    padding-bottom: 40px; /* Garante que o botão final não cole na barra do windows */
+    padding-bottom: 40px;
 }
 
 /* Coluna de OSs Atribuídas */
@@ -670,15 +670,11 @@ textarea:focus {
 /* Responsividade de Fábrica */
 @media (max-width: 1200px) {
     .execution-grid {
-        grid-template-columns: 240px 1fr;
-    }
-    .actions-column {
-        grid-column: span 2;
+        grid-template-columns: 1fr 320px;
     }
 }
 @media (max-width: 992px) {
     .main-content { max-width: 100%; margin-left: 0; }
     .sidebar { display: none; }
     .execution-grid { grid-template-columns: 1fr; }
-    .actions-column { grid-column: span 1; }
 }

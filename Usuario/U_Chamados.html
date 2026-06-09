@@ -144,6 +144,67 @@
 
     <script src="../mockDb.js"></script>
     <script src="U_Chamados.js"></script>
+
+    <div id="modal-detalhes-os-user" class="modal-overlay hidden">
+        <div class="modal-card" style="max-width: 600px;">
+            <div class="modal-header">
+                <h3 id="user-modal-os-titulo" style="font-size:20px; font-weight:700; margin-bottom:6px;">Detalhes da Ordem de Serviço</h3>
+                <p style="font-size:13px; color:var(--neutral-medium); margin-bottom:20px;">Informações detalhadas sobre o chamado e histórico do ativo.</p>
+            </div>
+            <div class="modal-body-content" style="max-height: 420px; overflow-y: auto; text-align: left; margin-bottom: 24px; font-family: var(--font-main);">
+                <div style="display: flex; flex-wrap: wrap; gap: 16px;">
+                    <div style="flex: 1 1 calc(50% - 8px); display:flex; flex-direction:column; gap:4px;">
+                        <label style="font-size: 11px; font-weight:600; text-transform:uppercase; color:var(--neutral-medium);">Código da OS</label>
+                        <p id="user-modal-os-codigo" style="font-weight: 700; font-size:15px; color:var(--secondary);"></p>
+                    </div>
+                    <div style="flex: 1 1 calc(50% - 8px); display:flex; flex-direction:column; gap:4px;">
+                        <label style="font-size: 11px; font-weight:600; text-transform:uppercase; color:var(--neutral-medium);">Máquina</label>
+                        <p id="user-modal-os-maquina" style="font-weight: 500; font-size:14px; color:var(--secondary);"></p>
+                    </div>
+                    <div style="flex: 1 1 calc(50% - 8px); display:flex; flex-direction:column; gap:4px;">
+                        <label style="font-size: 11px; font-weight:600; text-transform:uppercase; color:var(--neutral-medium);">Setor</label>
+                        <p id="user-modal-os-setor" style="font-weight: 500; font-size:14px; color:var(--secondary);"></p>
+                    </div>
+                    <div style="flex: 1 1 calc(50% - 8px); display:flex; flex-direction:column; gap:4px;">
+                        <label style="font-size: 11px; font-weight:600; text-transform:uppercase; color:var(--neutral-medium);">Tipo de Falha</label>
+                        <p id="user-modal-os-falha" style="font-weight: 500; font-size:14px; color:var(--secondary);"></p>
+                    </div>
+                    <div style="flex: 1 1 calc(50% - 8px); display:flex; flex-direction:column; gap:4px;">
+                        <label style="font-size: 11px; font-weight:600; text-transform:uppercase; color:var(--neutral-medium);">Criticidade</label>
+                        <p id="user-modal-os-criticidade" style="font-weight: 500; font-size:14px; color:var(--secondary);"></p>
+                    </div>
+                    <div style="flex: 1 1 calc(50% - 8px); display:flex; flex-direction:column; gap:4px;">
+                        <label style="font-size: 11px; font-weight:600; text-transform:uppercase; color:var(--neutral-medium);">Status</label>
+                        <p id="user-modal-os-status" style="font-weight: 500; font-size:14px; color:var(--secondary);"></p>
+                    </div>
+                    <div style="flex: 1 1 calc(50% - 8px); display:flex; flex-direction:column; gap:4px;">
+                        <label style="font-size: 11px; font-weight:600; text-transform:uppercase; color:var(--neutral-medium);">Técnico Responsável</label>
+                        <p id="user-modal-os-tecnico" style="font-weight: 500; font-size:14px; color:var(--secondary);"></p>
+                    </div>
+                    <div style="flex: 1 1 calc(50% - 8px); display:flex; flex-direction:column; gap:4px;">
+                        <label style="font-size: 11px; font-weight:600; text-transform:uppercase; color:var(--neutral-medium);">Data de Abertura</label>
+                        <p id="user-modal-os-data" style="font-weight: 500; font-size:14px; color:var(--secondary);"></p>
+                    </div>
+                    <div style="flex: 1 1 calc(50% - 8px); display:flex; flex-direction:column; gap:4px;">
+                        <label style="font-size: 11px; font-weight:600; text-transform:uppercase; color:var(--neutral-medium);">Solicitante</label>
+                        <p id="user-modal-os-solicitante" style="font-weight: 500; font-size:14px; color:var(--secondary);"></p>
+                    </div>
+                    <div style="flex: 1 1 100%; display:flex; flex-direction:column; gap:4px;">
+                        <label style="font-size: 11px; font-weight:600; text-transform:uppercase; color:var(--neutral-medium);">Histórico de Intervenções Recentes</label>
+                        <div id="user-modal-os-historico" style="font-size:13px; color:#424242; background:#F5F5F5; padding:12px; border-radius:6px; line-height:1.4; max-height:120px; overflow-y:auto;">
+                        </div>
+                    </div>
+                    <div style="flex: 1 1 100%; display:flex; flex-direction:column; gap:4px;">
+                        <label style="font-size: 11px; font-weight:600; text-transform:uppercase; color:var(--neutral-medium);">Descrição do Problema</label>
+                        <p id="user-modal-os-desc" style="font-size:13px; color:#424242; background:#F5F5F5; padding:12px; border-radius:6px; line-height:1.4;"></p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer-buttons" style="display: flex; justify-content: flex-end; gap: 12px;">
+                <button type="button" id="btn-fechar-modal-detalhes-user" class="btn-cancelar">Fechar</button>
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>
