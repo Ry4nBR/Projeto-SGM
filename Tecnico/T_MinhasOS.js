@@ -77,6 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ordensAtribuidas.forEach(o => {
             const eq = equipamentos.find(e => e.tag === o.equipamento_tag);
             const nomeEq = eq ? eq.nome : 'Equipamento';
+            const setorEq = eq ? eq.setor : (o.setor || 'Não definido');
             const li = document.createElement('li');
             li.className = `os-sidebar-item ${activeOS && activeOS.id === o.id ? 'active' : ''}`;
             
@@ -89,6 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
             li.innerHTML = `
                 <h4>#${o.codigo_os}</h4>
                 <p style="margin: 2px 0;">${o.equipamento_tag} - ${nomeEq}</p>
+                <p style="margin: 0; font-size: 11px; color: #888;">Setor: ${setorEq}</p>
                 <div class="os-meta-row" style="margin-top: 4px;">
                     <span class="os-status-pill ${statusBadgeClass}">${o.status_os === 'Em Andamento' ? 'Em Manut.' : o.status_os}</span>
                     <span style="font-weight:600; font-size:10px;">${o.criticidade || 'Alta'}</span>
@@ -96,7 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
 
             li.addEventListener('click', () => {
-                window.location.search = `?os=${o.codigo_os}`;
+                selecionarOS(o);
             });
 
             listaUl.appendChild(li);
@@ -233,6 +235,46 @@ document.addEventListener('DOMContentLoaded', () => {
             badgeStatusGeral.classList.add('status-em-manutencao'); // usa cor azul/inicial
         }
     }
+
+    // Função de navegação dinâmica sem reload
+    function selecionarOS(o) {
+        // Atualiza a OS ativa sem recarregar a página
+        activeOS = o;
+
+        // Atualiza a URL no navegador reativamente
+        const novaUrl = `${window.location.pathname}?os=${o.codigo_os}`;
+        window.history.pushState({ os: o.codigo_os }, '', novaUrl);
+
+        // Re-habilitar controles caso a OS anterior estivesse bloqueada
+        selectStatus.disabled = false;
+        document.getElementById('select-solicitar-kit').disabled = false;
+        document.getElementById('btn-solicitar-kit').disabled = true;
+        document.getElementById('btn-solicitar-kit').textContent = 'Solicitar Kit de Ferramentas';
+        document.getElementById('select-item-almoxarifado').disabled = false;
+        btnEnviarRequisicaoAvulsa.disabled = true;
+        btnAbrirEncerramento.disabled = false;
+        btnAbrirEncerramento.style.opacity = '1';
+        btnAbrirEncerramento.textContent = 'Encerrar Manutenção';
+
+        // Limpa lista de itens avulsos
+        listaItensAvulsos = [];
+
+        // Recarrega todos os dados da tela
+        carregarDadosOS();
+        renderizarListaOSAtribuidas();
+        carregarSeletorKits();
+        carregarSeletorItensAvulsos();
+        atualizarListaInterface();
+    }
+
+    // Suporte a navegação com botão voltar do navegador
+    window.addEventListener('popstate', (event) => {
+        if (event.state && event.state.os) {
+            const ordens = mockDb.getOrdensServico();
+            const os = ordens.find(o => o.codigo_os === event.state.os);
+            if (os) selecionarOS(os);
+        }
+    });
 
     // Inicializar visualizações
     renderizarListaOSAtribuidas();
@@ -446,11 +488,19 @@ document.addEventListener('DOMContentLoaded', () => {
     // Ouvinte do seletor de status em tempo de execução
     selectStatus.addEventListener('change', (e) => {
         const statusSelecionado = e.target.value;
-        let novoStatus = 'Em Andamento';
-        
-        if (statusSelecionado === 'Aguardando Peças') {
-            novoStatus = 'Aguardando Peças';
+
+        // Se o técnico selecionar "Concluído", disparar o fluxo de encerramento obrigatório
+        if (statusSelecionado === 'Concluído') {
+            // Reverter o select visualmente enquanto o modal não confirma
+            selectStatus.value = activeOS.status_os === 'Em Andamento' ? 'Em Manutenção' : activeOS.status_os;
+            modalRelato.classList.remove('hidden');
+            txtRelato.focus();
+            return;
         }
+
+        let novoStatus = statusSelecionado;
+        // Mapeia o valor visual de volta para o valor do banco
+        if (statusSelecionado === 'Em Manutenção') novoStatus = 'Em Andamento';
 
         mockDb.updateOrdemServico(activeOS.id, { status_os: novoStatus });
         activeOS.status_os = novoStatus;

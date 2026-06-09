@@ -218,6 +218,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function abrirModalDetalhesOSAdm(os) {
         if (!modalDetailsAdm) return;
+        const equipamentos = mockDb.getEquipamentos();
         const eq = equipamentos.find(e => e.tag === os.equipamento_tag);
         const usuarios = mockDb.getUsuarios();
         const solicitante = os.solicitante_id ? usuarios.find(u => u.id === os.solicitante_id) : null;

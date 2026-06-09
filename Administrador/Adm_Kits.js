@@ -39,76 +39,97 @@ document.addEventListener('DOMContentLoaded', () => {
         selectMaquina.appendChild(optGeral);
     }
 
-    // 3. Preencher o checklist de ferramentas dinamicamente do inventário do almoxarifado
+    // 3. Preencher o checklist de ferramentas e peças dinamicamente do inventário do almoxarifado
     function carregarChecklistFerramentas() {
         if (!checklistContainer) return;
         checklistContainer.innerHTML = '';
 
         const itens = mockDb.getItensAlmoxarifado();
-        // Filtra apenas itens que são ferramentas avulsas (exclui kits)
-        const ferramentas = itens.filter(i => i.categoria === 'Ferramenta Avulsa');
+        // Filtra ferramentas avulsas E peças de reposição (conforme plano)
+        const componentes = itens.filter(i => i.categoria === 'Ferramenta Avulsa' || i.categoria === 'Peça de Reposição');
 
-        if (ferramentas.length === 0) {
-            checklistContainer.innerHTML = '<p style="font-size:11px; color:var(--neutral-medium); font-style:italic;">Nenhuma ferramenta cadastrada no Almoxarifado.</p>';
+        if (componentes.length === 0) {
+            checklistContainer.innerHTML = '<p style="font-size:11px; color:var(--neutral-medium); font-style:italic;">Nenhum componente cadastrado no Almoxarifado.</p>';
             return;
         }
 
-        ferramentas.forEach(f => {
+        componentes.forEach(f => {
             const label = document.createElement('label');
             label.className = 'checkbox-item';
             label.innerHTML = `
                 <input type="checkbox" name="kit-components" value="${f.nome}">
-                ${f.nome}
+                ${f.nome} <small style="color:#999;">(${f.categoria})</small>
             `;
             checklistContainer.appendChild(label);
         });
     }
 
-    // 4. Renderizar a tabela de Kits dinamicamente
+    // 4. Renderizar a tabela de Kits dinamicamente com rastreabilidade completa
     function renderizarTabelaKits() {
         if (!tabelaKitsCorpo) return;
         tabelaKitsCorpo.innerHTML = '';
 
         const kits = mockDb.getKitsPadrao();
-        const itensAlmoxarifado = mockDb.getItensAlmoxarifado();
         const cautelas = mockDb.getControleFerramental();
         const usuarios = mockDb.getUsuarios();
 
+        if (kits.length === 0) {
+            tabelaKitsCorpo.innerHTML = `
+                <tr>
+                    <td colspan="8" style="text-align: center; color: var(--neutral-medium); font-style: italic; padding: 24px;">
+                        Nenhum kit padronizado cadastrado no sistema.
+                    </td>
+                </tr>`;
+            return;
+        }
+
         kits.forEach(kit => {
             const tr = document.createElement('tr');
-            
-            // Correlaciona com inventário físico
-            const itemEstoque = itensAlmoxarifado.find(i => i.nome.toLowerCase() === kit.nome_kit.toLowerCase());
-            const qtdEstoque = itemEstoque ? `${itemEstoque.qtd_atual} un` : '0 un';
 
-            // Correlaciona com cautelas físicas ativas
+            // Buscar cautela ativa para este kit
             const cautelaAtiva = cautelas.find(c => 
                 c.item_nome.toLowerCase() === kit.nome_kit.toLowerCase() && 
                 c.status_ativo === 'Em campo com técnico'
             );
 
-            let statusRastreabilidade = 'Disponível';
+            let statusText = 'Disponível';
             let badgeClass = 'status-disponivel';
+            let osVinculada = '—';
+            let tecnicoResp = '—';
+            let dataRetirada = '—';
 
             if (cautelaAtiva) {
+                statusText = 'Em uso';
+                badgeClass = 'status-em-uso';
+                osVinculada = cautelaAtiva.os_codigo ? `#${cautelaAtiva.os_codigo}` : '—';
                 const tecnico = usuarios.find(u => u.id === cautelaAtiva.tecnico_id);
-                const nomeTecnico = tecnico ? tecnico.nome : 'Técnico';
-                statusRastreabilidade = `Com ${nomeTecnico} na OS #${cautelaAtiva.os_codigo}`;
-                badgeClass = 'status-em-uso';
-            } else if (itemEstoque && itemEstoque.qtd_atual === 0) {
-                statusRastreabilidade = 'Indisponível';
-                badgeClass = 'status-em-uso';
+                tecnicoResp = tecnico ? tecnico.nome : 'Técnico';
+                if (cautelaAtiva.data_retirada) {
+                    try {
+                        dataRetirada = new Date(cautelaAtiva.data_retirada).toLocaleString('pt-BR', {
+                            day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit'
+                        });
+                    } catch (e) { dataRetirada = '—'; }
+                }
             } else if (kit.status && kit.status.includes('uso')) {
-                statusRastreabilidade = kit.status;
+                statusText = 'Em uso';
                 badgeClass = 'status-em-uso';
+                // Tenta extrair OS do status textual legado
+                const matchOS = kit.status.match(/#(\S+)/);
+                if (matchOS) osVinculada = `#${matchOS[1]}`;
             }
+
+            const descricao = kit.descricao || kit.desc || '—';
 
             tr.innerHTML = `
                 <td><strong>${kit.nome_kit}</strong></td>
+                <td>${descricao}</td>
                 <td>${kit.maquina_vinculo}</td>
                 <td>${kit.ferramentas}</td>
-                <td>${qtdEstoque}</td>
-                <td><span class="badge-status ${badgeClass}">${statusRastreabilidade}</span></td>
+                <td><span class="badge-status ${badgeClass}">${statusText}</span></td>
+                <td>${osVinculada}</td>
+                <td>${tecnicoResp}</td>
+                <td>${dataRetirada}</td>
             `;
             tabelaKitsCorpo.appendChild(tr);
         });
@@ -165,12 +186,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const nomeKit = document.getElementById('txt-kit-name').value.trim();
         const maquinaVinculo = selectMaquina.value;
+        const descricaoKit = document.getElementById('txt-kit-desc') ? document.getElementById('txt-kit-desc').value.trim() : '';
 
-        // Coleta quais checkboxes de ferramentas integrantes foram marcadas
+        // Coleta quais checkboxes de componentes foram marcadas
         const checkboxesComponentes = document.querySelectorAll('input[name="kit-components"]:checked');
 
         if (checkboxesComponentes.length === 0) {
-            alert('Aviso Operacional:\nPor favor, selecione ao menos 1 ferramenta integrante para compor o Kit Padrão.');
+            alert('Aviso Operacional:\nPor favor, selecione ao menos 1 componente para compor o Kit Padrão.');
             return;
         }
 
@@ -181,19 +203,20 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         const componentesString = arrayComponentesNames.join(', ');
 
-        // Salvar kit padrão no mockDb
+        // Salvar kit padrão no mockDb com descrição
         mockDb.saveKitPadrao({
             nome_kit: nomeKit,
             maquina_vinculo: maquinaVinculo,
             ferramentas: componentesString,
+            descricao: descricaoKit,
             status: 'Disponível'
         });
 
-        // Opcional: cria o Kit como um item indisponível ou zerado no Almoxarifado para ser "Liberado" pelo almoxarife
+        // Cria o Kit como um item no Almoxarifado
         mockDb.saveItemAlmoxarifado({
             nome: nomeKit,
             categoria: 'Kit Ferramentas',
-            qtd_atual: 1, // começa com 1 disponível
+            qtd_atual: 1,
             qtd_minima: 1,
             localizacao: 'Carrinho Móvel Geral'
         });

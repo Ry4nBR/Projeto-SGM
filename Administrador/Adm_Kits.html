@@ -146,6 +146,7 @@
                                 <option value="Operando" selected>Operando</option>
                                 <option value="Parado">Parado</option>
                                 <option value="Em Manutenção">Em Manutenção</option>
+                                <option value="Em observação">Em observação</option>
                             </select>
                         </div>
                         <button type="submit" class="btn-primary-action">Cadastrar e Ativar Máquina</button>
@@ -176,7 +177,12 @@
                         </div>
 
                         <div class="form-group margin-top-sm">
-                            <label>Ferramentas Inclusas (Selecione os itens componentes do Kit):</label>
+                            <label for="txt-kit-desc">Descrição do Kit</label>
+                            <textarea id="txt-kit-desc" rows="2" placeholder="Ex: Kit para manutenção preventiva de prensas hidráulicas com ferramental métrico..."></textarea>
+                        </div>
+
+                        <div class="form-group margin-top-sm">
+                            <label>Componentes do Kit (Ferramentas e Peças):</label>
                             <div class="checkbox-list-container">
                                 <label class="checkbox-item">
                                     <input type="checkbox" name="kit-components" value="Multímetro Fluke 179">
@@ -212,31 +218,17 @@
                         <thead>
                             <tr>
                                 <th>Nome do Kit</th>
-                                <th>Máquina Vinculada Indicada</th>
-                                <th>Ferramentas Integrantes da Composição</th>
-                                <th>Saldo Almoxarifado</th>
-                                <th>Status / Rastreabilidade</th>
+                                <th>Descrição</th>
+                                <th>Máquina Vinculada</th>
+                                <th>Ferramentas</th>
+                                <th>Status</th>
+                                <th>OS Vinculada</th>
+                                <th>Técnico Responsável</th>
+                                <th>Data de Retirada</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td><strong>Kit Padrão Mecânica Avançada #01</strong></td>
-                                <td>Prensa Hidráulica MQ-02</td>
-                                <td>Jogo Chaves Allen, Chave Inglesa 10", Martelo de Retrocesso</td>
-                                <td><span class="badge-status status-disponivel">Disponível</span></td>
-                            </tr>
-                            <tr>
-                                <td><strong>Kit Padrão Mecânica Avançada #02</strong></td>
-                                <td>Prensa Hidráulica MQ-02</td>
-                                <td>Jogo Chaves Allen, Chave Inglesa 10", Alicate de Pressão</td>
-                                <td><span class="badge-status status-em-uso">Em uso na OS #102</span></td>
-                            </tr>
-                            <tr>
-                                <td><strong>Kit Calibração Elétrica Flash</strong></td>
-                                <td>Injetora de Plástico MQ-09</td>
-                                <td>Multímetro Fluke 179, Alicate Amperímetro, Chaves Isoladas</td>
-                                <td><span class="badge-status status-disponivel">Disponível</span></td>
-                            </tr>
+                            <!-- Preenchido dinamicamente via Adm_Kits.js -->
                         </tbody>
                     </table>
                 </div>
